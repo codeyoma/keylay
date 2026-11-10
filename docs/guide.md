@@ -170,6 +170,40 @@ xcrun notarytool store-credentials keylay-notary --apple-id <Apple ID> --team-id
 
 `SKIP_NOTARIZE=1` installs a signed build without notarizing.
 
+## Releases
+
+Pushing a version tag (`git tag v0.2.0 && git push origin v0.2.0`) runs
+`.github/workflows/release.yml`: a universal macOS disk image, signed with the Developer ID
+and notarized, and the Windows installer (not signed), in a draft GitHub release. Look it
+over and publish it by hand. Pushes and pull requests build without signing (`build.yml`).
+
+The signing secrets live only in the repository's `release` environment, which runs for
+`v*` tags only and waits for an approval (Settings > Environments > release). Pull requests,
+forks included, never see them. To set them up once:
+
+1. Certificate: in Keychain Access, under My Certificates, export "Developer ID Application:
+   ..." with its key as a `.p12`, with a strong password. Then:
+
+   ```bash
+   base64 -i DeveloperID.p12 | gh secret set APPLE_CERTIFICATE --env release
+   gh secret set APPLE_CERTIFICATE_PASSWORD --env release   # asks for the password
+   rm DeveloperID.p12
+   ```
+
+2. Notarization: in App Store Connect, Users and Access > Integrations > App Store Connect
+   API, create a Team Key with the Developer role and download the `.p8` (once only). Then:
+
+   ```bash
+   gh secret set APPLE_API_KEY --env release < AuthKey_XXXXXXXXXX.p8
+   gh secret set APPLE_API_KEY_ID --env release      # the key ID
+   gh secret set APPLE_API_ISSUER --env release      # the issuer ID above the keys list
+   ```
+
+   Keep the `.p8` somewhere safe or delete it; a lost key can be revoked and replaced there.
+
+If the certificate ever leaks, revoke it at developer.apple.com (Certificates) and make a new
+one; apps signed with it stop opening, so release again with the new certificate.
+
 Set `KEYLAY_DEBUG=1` to print every state change to stderr, and `KEYLAY_SHOW_POPOVER=1` to
 open the popover (pinned) right after launch:
 
