@@ -193,7 +193,17 @@ function renderLayers(k) {
 function renameLayer(chip, k, names, i) {
   const input = document.createElement("input");
   input.value = names[i];
-  chip.querySelector(".n").replaceWith(input);
+  // As wide as the name it replaces, growing with the text: the name stays in the chip, out
+  // of sight, to measure the text
+  const name = chip.querySelector(".n");
+  name.classList.add("measure");
+  name.after(input);
+  const fit = () => {
+    name.textContent = input.value || " ";
+    input.style.width = `${Math.ceil(name.getBoundingClientRect().width)}px`;
+  };
+  fit();
+  input.addEventListener("input", fit);
   input.focus();
   input.select();
   const done = (commit) => {

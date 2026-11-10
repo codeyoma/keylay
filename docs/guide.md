@@ -158,6 +158,11 @@ The GitHub Actions workflow builds the macOS `.dmg` (universal) and the Windows 
 
 On first launch macOS asks for Bluetooth access; it is needed for the ZMK keyboards.
 
+To install on this Mac, run `scripts/install-macos.sh`. It builds the app, signs it with the
+Developer ID in your keychain, copies it to `/Applications` and starts it. macOS remembers the
+Bluetooth permission per signature, so an unsigned build asks again after every install; a
+signed one asks once.
+
 Set `KEYLAY_DEBUG=1` to print every state change to stderr, and `KEYLAY_SHOW_POPOVER=1` to
 open the popover (pinned) right after launch:
 

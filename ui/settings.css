@@ -367,10 +367,13 @@ input.narrow {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
+  box-sizing: border-box;
+  height: 24px;
+  padding: 0 8px;
   border-radius: 6px;
   background: var(--surface-2);
   font-size: 12px;
+  line-height: 16px;
 }
 
 .chip .swatch {
@@ -379,11 +382,30 @@ input.narrow {
   border-radius: 50%;
 }
 
+/* Renaming: the name turns into a field of the same height, so the chip keeps its size. Its
+   width follows the text (set from settings.js) and the focus ring sits outside the box. */
 .chip input {
-  width: 90px;
-  height: 20px;
-  padding: 0 4px;
-  border-radius: 4px;
+  box-sizing: content-box;
+  height: 16px;
+  min-width: 3ch;
+  margin: 0 -3px;
+  padding: 0 3px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--bg);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.chip .measure {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+}
+
+.chip input:focus {
+  border: 0;
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
 .chip.renamed {
