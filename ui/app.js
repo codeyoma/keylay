@@ -13,6 +13,7 @@ const state = {
   fullViewBox: null,
   groups: [], // <g class="layer-..."> per layer, in keymap order
   boxes: [], // their key area (label left out) in SVG coordinates
+  frame: null, // the union of those areas in a layer's own coordinates, shown in "Current"
   labels: [], // and with the label, for "All"
   shown: null,
 };
@@ -234,6 +235,7 @@ async function renderSheet(keyboard, device) {
     document.body.dataset.mode = "all";
     state.boxes = state.groups.map((g) => box(g, (el) => !el.matches("text.label")));
     state.labels = state.groups.map((g) => box(g, () => true));
+    state.frame = commonFrame(state.groups, state.boxes);
   }
   showLayer(device?.layer ?? null);
 }
@@ -257,6 +259,26 @@ function box(group, keep) {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 
+// One frame for every layer, in a layer group's own coordinates: the union of all the layers'
+// key areas. "Current" shows each layer through it, so the window keeps the height of the
+// tallest layer and the keys stay in place when the layer changes.
+function commonFrame(groups, boxes) {
+  let x0 = Infinity,
+    y0 = Infinity,
+    x1 = -Infinity,
+    y1 = -Infinity;
+  groups.forEach((g, i) => {
+    const t = translation(g);
+    const b = boxes[i];
+    if (!Number.isFinite(b.w)) return; // an empty layer
+    x0 = Math.min(x0, b.x - t.x);
+    y0 = Math.min(y0, b.y - t.y);
+    x1 = Math.max(x1, b.x - t.x + b.w);
+    y1 = Math.max(y1, b.y - t.y + b.h);
+  });
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+}
+
 function translation(el) {
   const m = el.transform?.baseVal?.consolidate()?.matrix;
   return { x: m?.e ?? 0, y: m?.f ?? 0 };
@@ -272,7 +294,7 @@ function showLayer(live) {
     button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
     button.disabled = !connected;
   }
-  const { svg, groups, boxes, labels } = state;
+  const { svg, groups, labels } = state;
   if (!svg || groups.length === 0) return fit(mode);
 
   const target = state.preview ?? live; // the layer to show or scroll to
@@ -284,7 +306,9 @@ function showLayer(live) {
   });
 
   if (current) {
-    const b = boxes[index];
+    const t = translation(groups[index]);
+    const f = state.frame;
+    const b = { x: f.x + t.x, y: f.y + t.y, w: f.w, h: f.h };
     const pad = 4;
     svg.setAttribute("viewBox", `${b.x - pad} ${b.y - pad} ${b.w + 2 * pad} ${b.h + 2 * pad}`);
     $("sheet").scrollTop = 0;
