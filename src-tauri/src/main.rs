@@ -14,13 +14,12 @@ mod popover;
 mod protocol;
 mod settings;
 mod tray;
-mod window_state;
 
 use hub::{Hub, Snapshot};
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
-use tauri::{AppHandle, Manager, State, WindowEvent};
+use tauri::{AppHandle, Manager, State};
 
 
 #[tauri::command]
@@ -57,9 +56,7 @@ fn set_login(app: AppHandle, enabled: bool) -> Result<(), String> {
 
 #[tauri::command]
 fn open_settings(app: AppHandle) {
-    if let Some(window) = app.get_webview_window(popover::LABEL) {
-        popover::hide(&window);
-    }
+    popover::hide(&app);
     settings::open(&app);
 }
 
@@ -82,27 +79,6 @@ async fn reload(hub: State<'_, Arc<Hub>>) -> Result<(), String> {
 #[tauri::command]
 fn open_config(hub: State<'_, Arc<Hub>>) {
     open_in_editor(&hub.config_path);
-}
-
-#[tauri::command]
-fn set_pinned(app: AppHandle, hub: State<'_, Arc<Hub>>, pinned: bool) {
-    let _ = app;
-    window_state::update(|s| s.pinned = pinned);
-    hub.set_pinned(pinned);
-}
-
-#[tauri::command]
-fn hide_popover(app: AppHandle) {
-    if let Some(window) = app.get_webview_window(popover::LABEL) {
-        popover::dismiss(&app, &window);
-    }
-}
-
-#[tauri::command]
-fn fit_popover(app: AppHandle, height: f64) {
-    if let Some(window) = app.get_webview_window(popover::LABEL) {
-        popover::fit_height(&window, height);
-    }
 }
 
 pub fn open_in_editor(path: &Path) {
@@ -134,9 +110,9 @@ fn main() {
             get_login,
             set_login,
             open_settings,
-            set_pinned,
-            hide_popover,
-            fit_popover
+            popover::commands::set_pinned,
+            popover::commands::hide_popover,
+            popover::commands::fit_popover
         ])
         .setup(|app| {
             // A menu bar app: no Dock icon
@@ -144,7 +120,7 @@ fn main() {
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
             let handle = app.handle().clone();
-            window_state::init(app.path().app_config_dir()?.join("window.json"));
+            popover::init(&app.path().app_config_dir()?.join("window.json"));
             let config_path = app.path().app_config_dir()?.join("config.json");
             let cache_dir = app.path().app_cache_dir()?.join("keymaps");
             let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir));
@@ -185,7 +161,7 @@ fn main() {
                 });
             }
             if std::env::var_os("KEYLAY_SHOW_POPOVER").is_some() {
-                hub.set_pinned(true);
+                popover::pin_for_this_run();
                 std::thread::spawn(move || {
                     std::thread::sleep(Duration::from_millis(1500));
                     let app = handle.clone();
@@ -194,45 +170,7 @@ fn main() {
             }
             Ok(())
         })
-        .on_window_event(|window, event| match event {
-            // Behave like a popover: hide when another app is clicked, unless pinned.
-            // (Only the popover: other windows, like settings, close for real.)
-            WindowEvent::Focused(false) if window.label() == popover::LABEL => {
-                let pinned = window.state::<Arc<Hub>>().pinned();
-                if !pinned {
-                    if let Some(w) = window.app_handle().get_webview_window(popover::LABEL) {
-                        popover::hide(&w);
-                    }
-                }
-            }
-            // The user's own moves and resizes are remembered
-            WindowEvent::Moved(position) if window.label() == popover::LABEL => {
-                let scale = window.scale_factor().unwrap_or(1.0);
-                let point = position.to_logical::<f64>(scale);
-                if window_state::user_moved(point.x.round() as i32, point.y.round() as i32) {
-                    window_state::update(|s| {
-                        s.x = Some(point.x);
-                        s.y = Some(point.y);
-                    });
-                }
-            }
-            WindowEvent::Resized(size) if window.label() == popover::LABEL => {
-                if window.is_visible().unwrap_or(false) && window_state::user_resized(size.width, size.height) {
-                    let scale = window.scale_factor().unwrap_or(1.0);
-                    let size = size.to_logical::<f64>(scale);
-                    window_state::update(|s| {
-                        s.width = Some(size.width);
-                        s.height = Some(size.height);
-                    });
-                }
-            }
-            // Closing the popover only hides it; the app lives in the tray.
-            WindowEvent::CloseRequested { api, .. } if window.label() == popover::LABEL => {
-                api.prevent_close();
-                let _ = window.hide();
-            }
-            _ => {}
-        })
+        .on_window_event(popover::on_window_event)
         .build(tauri::generate_context!())
         .expect("error while building KeyLay")
         .run(|_app, event| {

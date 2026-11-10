@@ -8,7 +8,6 @@ use crate::tray;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter};
@@ -115,7 +114,6 @@ pub struct Hub {
     /// One keymap check at a time, and when the last one ran
     keymap_check: Mutex<Option<Instant>>,
     devices: Mutex<HashMap<String, Device>>,
-    pinned: AtomicBool,
 }
 
 impl Hub {
@@ -131,7 +129,6 @@ impl Hub {
             keymaps: RwLock::new(HashMap::new()),
             keymap_check: Mutex::new(None),
             devices: Mutex::new(HashMap::new()),
-            pinned: AtomicBool::new(crate::window_state::get().pinned),
         }
     }
 
@@ -258,15 +255,6 @@ impl Hub {
         }
     }
 
-    pub fn pinned(&self) -> bool {
-        self.pinned.load(Ordering::Relaxed)
-    }
-
-    pub fn set_pinned(&self, pinned: bool) {
-        self.pinned.store(pinned, Ordering::Relaxed);
-        self.notify();
-    }
-
     pub fn snapshot(&self) -> Snapshot {
         let config = self.config.read().unwrap();
         let keymaps = self.keymaps.read().unwrap();
@@ -336,17 +324,18 @@ impl Hub {
         Snapshot {
             devices: views,
             keyboards,
-            pinned: self.pinned(),
+            pinned: crate::popover::pinned(),
             config_path: self.config_path.display().to_string(),
             config_error: self.config_error.read().unwrap().clone(),
             title_format: config.title_format.clone(),
             layer_width: config.layer_width,
             appearance: crate::appearance::effective(&config.appearance),
-            popover_max_height: crate::window_state::get().height,
+            popover_max_height: crate::popover::max_height(),
         }
     }
 
-    fn notify(&self) {
+    /// Tells the tray and the windows that something changed.
+    pub fn notify(&self) {
         let snapshot = self.snapshot();
         if std::env::var_os("KEYLAY_DEBUG").is_some() {
             eprintln!("keylay: {}", serde_json::to_string(&snapshot.devices).unwrap_or_default());
