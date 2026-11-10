@@ -238,7 +238,6 @@ function renderBatteries(k, d) {
     ...Array.from({ length: count }, (_, i) => {
       const row = document.createElement("div");
       row.className = "battery";
-      row.draggable = true;
       row.innerHTML =
         '<svg class="icon grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg><input spellcheck="false" /><span class="now"></span>';
       const input = row.querySelector("input");
@@ -250,22 +249,17 @@ function renderBatteries(k, d) {
       });
       const level = levels[i]?.level;
       row.querySelector(".now").textContent = level == null ? "" : `${level}%`;
-      // Drag a label onto another to swap them
-      row.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", String(i));
-        row.classList.add("dragging");
-      });
-      row.addEventListener("dragend", () => row.classList.remove("dragging"));
-      row.addEventListener("dragover", (e) => e.preventDefault());
-      row.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const from = Number(e.dataTransfer.getData("text/plain"));
-        if (from === i) return;
-        const labels = Array.from({ length: count }, (_, j) => k.batteryLabels?.[j] ?? defaults(j));
-        [labels[from], labels[i]] = [labels[i], labels[from]];
-        k.batteryLabels = labels;
-        renderDetail();
-        save();
+      row.dataset.index = String(i);
+      // Drag a label to another place, e.g. when the halves are reversed
+      draggable(row, {
+        zones: () => [box],
+        handle: ".grip",
+        onDrop: () => {
+          const labels = Array.from({ length: count }, (_, j) => k.batteryLabels?.[j] ?? defaults(j));
+          k.batteryLabels = [...box.querySelectorAll(".battery")].map((r) => labels[Number(r.dataset.index)]);
+          renderDetail();
+          save();
+        },
       });
       return row;
     }),
@@ -372,86 +366,31 @@ function partElement(part) {
   el.dataset.token = part.token;
   el.innerHTML = `${GRIP}<span></span>`;
   el.querySelector("span").textContent = part.label;
-  el.addEventListener("pointerdown", (e) => startPartDrag(e, el));
+  draggable(el, {
+    zones: () => [$("g-parts"), $("g-spare")],
+    onDrop: () => {
+      const next = [...$("g-parts").querySelectorAll(".part")].map((p) => p.dataset.token);
+      // The title needs at least one part
+      if (next.length > 0) setTitleTokens(next);
+      else renderTitleParts();
+    },
+    onClick: () => {
+      // Move it to the other row
+      const shown = shownTokens(state.config.titleFormat);
+      const token = part.token;
+      const next = shown.includes(token) ? shown.filter((t) => t !== token) : [...shown, token];
+      if (next.length > 0) setTitleTokens(next);
+    },
+  });
   return el;
 }
 
 function renderTitleParts() {
-  if (titleDrag) return; // the drag owns the parts until it ends
+  if (document.querySelector(".part.drag-lifted")) return; // a drag owns the parts until it ends
   const shown = shownTokens(state.config.titleFormat);
   const byToken = (t) => TITLE_PARTS.find((p) => p.token === t);
   $("g-parts").replaceChildren(...shown.map((t) => partElement(byToken(t))));
   $("g-spare").replaceChildren(...TITLE_PARTS.filter((p) => !shown.includes(p.token)).map(partElement));
-}
-
-// Pointer dragging (HTML drag and drop does not work everywhere in the webview): the part
-// follows the pointer, and a gap opens where it would land.
-let titleDrag = null;
-
-function startPartDrag(e, el) {
-  if (e.button !== 0) return;
-  const rect = el.getBoundingClientRect();
-  titleDrag = { el, startX: e.clientX, startY: e.clientY, dx: e.clientX - rect.left, dy: e.clientY - rect.top, moved: false, gap: null };
-  // On the window: the part leaves its row while it is dragged
-  window.addEventListener("pointermove", movePartDrag);
-  window.addEventListener("pointerup", endPartDrag, { once: true });
-  window.addEventListener("pointercancel", endPartDrag, { once: true });
-}
-
-function movePartDrag(e) {
-  const d = titleDrag;
-  if (!d) return;
-  if (!d.moved) {
-    if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < 4) return;
-    d.moved = true;
-    const rect = d.el.getBoundingClientRect();
-    d.gap = document.createElement("div");
-    d.gap.className = "part gap";
-    d.gap.style.width = `${rect.width}px`;
-    d.el.replaceWith(d.gap);
-    d.el.classList.add("lifted");
-    d.el.style.width = `${rect.width}px`;
-    document.body.append(d.el);
-  }
-  d.el.style.left = `${e.clientX - d.dx}px`;
-  d.el.style.top = `${e.clientY - d.dy}px`;
-  // The zone under the pointer (or the nearer one), then the spot among its parts
-  const zones = [$("g-parts"), $("g-spare")];
-  const distance = (z) => {
-    const r = z.getBoundingClientRect();
-    return Math.abs(e.clientY - Math.min(Math.max(e.clientY, r.top), r.bottom));
-  };
-  const zone = distance(zones[0]) <= distance(zones[1]) ? zones[0] : zones[1];
-  const before = [...zone.querySelectorAll(".part:not(.gap)")].find((p) => {
-    const r = p.getBoundingClientRect();
-    return e.clientX < r.left + r.width / 2;
-  });
-  if (before) zone.insertBefore(d.gap, before);
-  else zone.append(d.gap);
-}
-
-function endPartDrag(e) {
-  const d = titleDrag;
-  if (!d) return;
-  window.removeEventListener("pointermove", movePartDrag);
-  window.removeEventListener("pointerup", endPartDrag);
-  window.removeEventListener("pointercancel", endPartDrag);
-  titleDrag = null;
-  if (!d.moved) {
-    // A click: move it to the other row
-    const shown = shownTokens(state.config.titleFormat);
-    const token = d.el.dataset.token;
-    const next = shown.includes(token) ? shown.filter((t) => t !== token) : [...shown, token];
-    if (next.length > 0) setTitleTokens(next);
-    return;
-  }
-  d.el.classList.remove("lifted");
-  d.el.style.cssText = "";
-  d.gap.replaceWith(d.el);
-  const next = [...$("g-parts").querySelectorAll(".part")].map((p) => p.dataset.token);
-  // The title needs at least one part
-  if (next.length > 0) setTitleTokens(next);
-  else renderTitleParts();
 }
 
 for (const [id, step] of [["g-width-dec", -1], ["g-width-inc", 1]]) {

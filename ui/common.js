@@ -29,3 +29,65 @@ const layerColor = (snapshot, i) => {
 // The connected device for a keyboard: `key` is its config name, or the device name for a
 // keyboard that is not in the config
 const deviceFor = (snapshot, key) => snapshot?.devices.find((d) => d.key === key) ?? null;
+
+// Drag to reorder, with pointer events (HTML drag and drop is not reliable in the webview).
+// While dragged, the item follows the pointer and a gap opens where it would land, in
+// whichever of `zones()` is nearest. A press that does not move is a click.
+//   handle: a selector inside the item to drag by (default: the whole item)
+//   onDrop(): the item is in its new place in the DOM; read the order from there
+//   onClick(): pressed and released without moving
+function draggable(item, { zones, handle, onDrop, onClick }) {
+  const grip = handle ? item.querySelector(handle) : item;
+  grip.style.touchAction = "none";
+  grip.addEventListener("pointerdown", (down) => {
+    if (down.button !== 0) return;
+    down.preventDefault();
+    const start = item.getBoundingClientRect();
+    const offset = { x: down.clientX - start.left, y: down.clientY - start.top };
+    let gap = null;
+
+    const move = (e) => {
+      if (!gap) {
+        if (Math.hypot(e.clientX - down.clientX, e.clientY - down.clientY) < 4) return;
+        const r = item.getBoundingClientRect();
+        gap = document.createElement("div");
+        gap.className = `${item.className} drag-gap`;
+        gap.style.width = `${r.width}px`;
+        gap.style.height = `${r.height}px`;
+        item.replaceWith(gap);
+        item.classList.add("drag-lifted");
+        item.style.width = `${r.width}px`;
+        document.body.append(item);
+      }
+      item.style.left = `${e.clientX - offset.x}px`;
+      item.style.top = `${e.clientY - offset.y}px`;
+      const distance = (z) => {
+        const r = z.getBoundingClientRect();
+        return Math.abs(e.clientY - Math.min(Math.max(e.clientY, r.top), r.bottom));
+      };
+      const zone = zones().reduce((best, z) => (distance(z) < distance(best) ? z : best));
+      const before = [...zone.children].find((el) => {
+        if (el === gap) return false;
+        const r = el.getBoundingClientRect();
+        return e.clientX < r.left + r.width / 2;
+      });
+      if (before) zone.insertBefore(gap, before);
+      else zone.append(gap);
+    };
+
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      if (!gap) return onClick?.();
+      item.classList.remove("drag-lifted");
+      item.style.left = item.style.top = item.style.width = "";
+      gap.replaceWith(item);
+      onDrop?.();
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  });
+}

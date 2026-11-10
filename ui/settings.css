@@ -413,18 +413,24 @@ input.narrow {
   color: var(--faint);
 }
 
-.part.gap {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--line);
-  border-style: dashed;
-}
-
-.part.lifted {
+/* Dragging (draggable() in common.js): the lifted item and the gap where it will land */
+.drag-lifted {
   position: fixed;
   z-index: 10;
   cursor: grabbing;
   pointer-events: none;
-  box-shadow: inset 0 1px 0 var(--rim), 0 6px 16px var(--lift);
+  box-shadow: 0 6px 16px var(--lift);
+}
+
+.drag-gap {
+  flex: none;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 1px dashed var(--line) !important;
+}
+
+.drag-gap > * {
+  display: none;
 }
 
 .chips {
@@ -502,10 +508,6 @@ input.narrow {
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--bg);
-}
-
-.battery.dragging {
-  opacity: 0.4;
 }
 
 .battery .grip {
