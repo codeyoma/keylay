@@ -158,10 +158,17 @@ The GitHub Actions workflow builds the macOS `.dmg` (universal) and the Windows 
 
 On first launch macOS asks for Bluetooth access; it is needed for the ZMK keyboards.
 
-To install on this Mac, run `scripts/install-macos.sh`. It builds the app, signs it with the
-Developer ID in your keychain, copies it to `/Applications` and starts it. macOS remembers the
-Bluetooth permission per signature, so an unsigned build asks again after every install; a
-signed one asks once.
+To install on this Mac, run `scripts/install-macos.sh`. It builds the app and its disk image,
+signs them with the Developer ID in your keychain, has Apple notarize the disk image, and
+installs KeyLay to `/Applications` from it, the same way a download would be. macOS remembers
+the Bluetooth permission per signature, so an unsigned build asks again after every install; a
+signed one asks once. Notarizing needs credentials in the keychain once:
+
+```bash
+xcrun notarytool store-credentials keylay-notary --apple-id <Apple ID> --team-id <Team ID>
+```
+
+`SKIP_NOTARIZE=1` installs a signed build without notarizing.
 
 Set `KEYLAY_DEBUG=1` to print every state change to stderr, and `KEYLAY_SHOW_POPOVER=1` to
 open the popover (pinned) right after launch:
