@@ -105,13 +105,13 @@
 
         <div class="field">
           <span class="label">Title</span>
-          <div id="g-format" class="segmented">
-            <button data-value="{layer} {battery}">Layer + battery</button>
-            <button data-value="{layer}">Layer</button>
-            <button data-value="{keyboard} {layer}">Keyboard + layer</button>
+          <div class="title-builder">
+            <span class="zone-label">Shown</span>
+            <div id="g-parts" class="parts shown" aria-label="Shown in the title, in order"></div>
+            <span class="zone-label">Hidden</span>
+            <div id="g-spare" class="parts spare" aria-label="Not shown in the title"></div>
           </div>
-          <input id="g-format-custom" class="mono narrow" spellcheck="false" />
-          <span class="hint">Custom: {keyboard} {layer} {battery}</span>
+          <span class="hint">Drag to change the order; drag a part to Hidden to leave it out. A click moves it across.</span>
         </div>
 
         <div class="field">

@@ -338,26 +338,122 @@ function renderGeneral() {
   const c = state.config;
   renderTitlePreview();
   $("mb-clock").textContent = new Date().toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).replace(",", "");
-  setPressed($("g-format"), c.titleFormat);
-  setValue($("g-format-custom"), c.titleFormat);
+  renderTitleParts();
   $("g-width").textContent = c.layerWidth === 0 ? "off" : String(c.layerWidth);
   $("g-key").checked = c.keylayKey;
   setPressed($("g-interval"), String(c.keymapCheckMinutes));
   setPressed($("g-appearance"), c.appearance === "solid" ? "solid" : "glass");
 }
 
-$("g-format").addEventListener("click", (e) => {
-  const b = e.target.closest("button");
-  if (!b) return;
-  state.config.titleFormat = b.dataset.value;
+// --- Title parts: the title format as parts to drag into order ------------------------------
+
+const TITLE_PARTS = [
+  { token: "{layer}", label: "Layer" },
+  { token: "{keyboard}", label: "Keyboard" },
+  { token: "{battery}", label: "Battery" },
+];
+const GRIP =
+  '<svg class="icon grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>';
+
+// The parts in the format, in order ("{layer} {battery}" -> ["{layer}", "{battery}"])
+function shownTokens(format) {
+  return (format.match(/\{(layer|keyboard|battery)\}/g) ?? []).filter((t, i, all) => all.indexOf(t) === i);
+}
+
+function setTitleTokens(tokens) {
+  state.config.titleFormat = tokens.join(" ");
   renderGeneral();
   save();
-});
-$("g-format-custom").addEventListener("input", (e) => {
-  state.config.titleFormat = e.target.value;
-  renderGeneral();
-  save();
-});
+}
+
+function partElement(part) {
+  const el = document.createElement("div");
+  el.className = "part";
+  el.dataset.token = part.token;
+  el.innerHTML = `${GRIP}<span></span>`;
+  el.querySelector("span").textContent = part.label;
+  el.addEventListener("pointerdown", (e) => startPartDrag(e, el));
+  return el;
+}
+
+function renderTitleParts() {
+  if (titleDrag) return; // the drag owns the parts until it ends
+  const shown = shownTokens(state.config.titleFormat);
+  const byToken = (t) => TITLE_PARTS.find((p) => p.token === t);
+  $("g-parts").replaceChildren(...shown.map((t) => partElement(byToken(t))));
+  $("g-spare").replaceChildren(...TITLE_PARTS.filter((p) => !shown.includes(p.token)).map(partElement));
+}
+
+// Pointer dragging (HTML drag and drop does not work everywhere in the webview): the part
+// follows the pointer, and a gap opens where it would land.
+let titleDrag = null;
+
+function startPartDrag(e, el) {
+  if (e.button !== 0) return;
+  const rect = el.getBoundingClientRect();
+  titleDrag = { el, startX: e.clientX, startY: e.clientY, dx: e.clientX - rect.left, dy: e.clientY - rect.top, moved: false, gap: null };
+  // On the window: the part leaves its row while it is dragged
+  window.addEventListener("pointermove", movePartDrag);
+  window.addEventListener("pointerup", endPartDrag, { once: true });
+  window.addEventListener("pointercancel", endPartDrag, { once: true });
+}
+
+function movePartDrag(e) {
+  const d = titleDrag;
+  if (!d) return;
+  if (!d.moved) {
+    if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < 4) return;
+    d.moved = true;
+    const rect = d.el.getBoundingClientRect();
+    d.gap = document.createElement("div");
+    d.gap.className = "part gap";
+    d.gap.style.width = `${rect.width}px`;
+    d.el.replaceWith(d.gap);
+    d.el.classList.add("lifted");
+    d.el.style.width = `${rect.width}px`;
+    document.body.append(d.el);
+  }
+  d.el.style.left = `${e.clientX - d.dx}px`;
+  d.el.style.top = `${e.clientY - d.dy}px`;
+  // The zone under the pointer (or the nearer one), then the spot among its parts
+  const zones = [$("g-parts"), $("g-spare")];
+  const distance = (z) => {
+    const r = z.getBoundingClientRect();
+    return Math.abs(e.clientY - Math.min(Math.max(e.clientY, r.top), r.bottom));
+  };
+  const zone = distance(zones[0]) <= distance(zones[1]) ? zones[0] : zones[1];
+  const before = [...zone.querySelectorAll(".part:not(.gap)")].find((p) => {
+    const r = p.getBoundingClientRect();
+    return e.clientX < r.left + r.width / 2;
+  });
+  if (before) zone.insertBefore(d.gap, before);
+  else zone.append(d.gap);
+}
+
+function endPartDrag(e) {
+  const d = titleDrag;
+  if (!d) return;
+  window.removeEventListener("pointermove", movePartDrag);
+  window.removeEventListener("pointerup", endPartDrag);
+  window.removeEventListener("pointercancel", endPartDrag);
+  titleDrag = null;
+  if (!d.moved) {
+    // A click: move it to the other row
+    const shown = shownTokens(state.config.titleFormat);
+    const token = d.el.dataset.token;
+    const next = shown.includes(token) ? shown.filter((t) => t !== token) : [...shown, token];
+    if (next.length > 0) setTitleTokens(next);
+    return;
+  }
+  d.el.classList.remove("lifted");
+  d.el.style.cssText = "";
+  d.gap.replaceWith(d.el);
+  const next = [...$("g-parts").querySelectorAll(".part")].map((p) => p.dataset.token);
+  // The title needs at least one part
+  if (next.length > 0) setTitleTokens(next);
+  else renderTitleParts();
+}
+
 for (const [id, step] of [["g-width-dec", -1], ["g-width-inc", 1]]) {
   $(id).addEventListener("click", () => {
     state.config.layerWidth = Math.min(12, Math.max(0, state.config.layerWidth + step));

@@ -357,6 +357,76 @@ input.narrow {
   font-weight: 600;
 }
 
+/* Title parts */
+.title-builder {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px 10px;
+  max-width: 420px;
+}
+
+.zone-label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.parts {
+  display: flex;
+  gap: 6px;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 5px;
+  border-radius: 8px;
+  background: var(--bg);
+  box-shadow: inset 0 1px 1px var(--lift);
+}
+
+.parts.spare {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.part {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  height: 26px;
+  padding: 0 10px 0 4px;
+  border-radius: 6px;
+  background: var(--key);
+  box-shadow: inset 0 1px 0 var(--rim), 0 1px 2px var(--lift);
+  font-size: 12px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.parts.spare .part {
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+.part .grip {
+  width: 14px;
+  height: 14px;
+  color: var(--faint);
+}
+
+.part.gap {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+  border-style: dashed;
+}
+
+.part.lifted {
+  position: fixed;
+  z-index: 10;
+  cursor: grabbing;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 var(--rim), 0 6px 16px var(--lift);
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
