@@ -1,0 +1,38 @@
+{
+  "titleFormat": "{layer} {battery}",
+  "layerWidth": 6,
+  "keyboards": [
+    {
+      "name": "Charybdis QMK",
+      "match": "Charybdis",
+      "transport": "usb",
+      "keymap": "https://raw.githubusercontent.com/codeyoma/keyboard-qmk-charybdis/main/charybdis_keymap.ortho.svg",
+      "batteryLabels": [],
+      "layerNames": []
+    },
+    {
+      "name": "Charybdis ZMK",
+      "match": "Charybdis",
+      "transport": "ble",
+      "keymap": "https://raw.githubusercontent.com/codeyoma/keyboard-zmk-charybdis/main/charybdis_keymap.svg",
+      "batteryLabels": ["Dongle", "Left", "Right"],
+      "layerNames": []
+    },
+    {
+      "name": "Sweep",
+      "match": "Sweep",
+      "transport": "ble",
+      "keymap": "https://raw.githubusercontent.com/codeyoma/keyboard-zmk-sweep/main/sweep_keymap.svg",
+      "batteryLabels": ["Dongle", "Left", "Right"],
+      "layerNames": []
+    },
+    {
+      "name": "moNa2",
+      "match": "moNa2",
+      "transport": "ble",
+      "keymap": "https://raw.githubusercontent.com/codeyoma/keyboard-zmk-mona/main/mona2_keymap.svg",
+      "batteryLabels": ["Right", "Left"],
+      "layerNames": []
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+name: zmk-keylay
+build:
+  cmake: .
+  kconfig: Kconfig

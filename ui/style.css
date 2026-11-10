@@ -1,0 +1,550 @@
+/* KeyLay popover, after design/keylay.pen ("03 Popover") */
+
+:root {
+  color-scheme: light dark;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --bg: #f4f4f1;
+  --surface: #ffffff;
+  --surface-2: #ededea;
+  --line: #e0e0dc;
+  --key: #ffffff;
+  --key-line: #d6d6d1;
+  --text: #15161a;
+  --muted: #6b6e77;
+  --faint: #aeb0b5;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  /* the layer shown; set from JS */
+  --layer: #8a8f98;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121316;
+    --surface: #1b1c20;
+    --surface-2: #24262b;
+    --line: #2d2f35;
+    --key: #23252a;
+    --key-line: #34373e;
+    --text: #f1f2f4;
+    --muted: #8e929b;
+    --faint: #4e525a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  /* The window is transparent; the panel draws the rounded popover */
+  background: transparent;
+}
+
+body {
+  font: 13px/1.35 var(--ui);
+  color: var(--text);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--layer);
+  outline-offset: 1px;
+}
+
+.icon {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 6px 14px;
+}
+
+.spacer {
+  flex: 1;
+  align-self: stretch;
+}
+
+.switcher-wrap {
+  position: relative;
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.switcher .icon {
+  width: 13px;
+  height: 13px;
+  color: var(--muted);
+}
+
+.switcher-name {
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex-shrink: 0;
+}
+
+.dot.on {
+  background: var(--good);
+}
+
+.menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 230px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.28);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 7px;
+  text-align: left;
+}
+
+.menu-item:hover,
+.menu-item[aria-selected="true"] {
+  background: var(--surface-2);
+}
+
+.menu-item .name {
+  flex: 1;
+}
+
+.menu-item .meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.link .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--muted);
+}
+
+.icon-button.small {
+  width: 26px;
+  height: 26px;
+}
+
+.icon-button.small .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.icon-button:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+#pin[aria-pressed="true"] {
+  color: var(--layer);
+}
+
+#pin[aria-pressed="true"] .icon {
+  fill: currentColor;
+}
+
+.spinning .icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hero: layer and batteries */
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 16px 16px;
+}
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.layer-bar {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  background: var(--layer);
+  flex-shrink: 0;
+}
+
+.layer-bar.off {
+  background: var(--faint);
+}
+
+.layer-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.layer-name {
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layer-name.off {
+  font-size: 22px;
+  color: var(--muted);
+}
+
+.detail {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.batteries {
+  display: flex;
+  gap: 14px;
+}
+
+.battery {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.battery .label {
+  font: 9px var(--mono);
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.battery .value {
+  font: 600 14px var(--mono);
+}
+
+.battery .track {
+  position: relative;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.battery .fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+  background: var(--good);
+}
+
+.battery.warn .fill {
+  background: var(--warn);
+}
+
+.battery.bad .fill {
+  background: var(--bad);
+}
+
+/* Layer row */
+.chips {
+  display: flex;
+  gap: 3px;
+}
+
+.chips:empty {
+  display: none;
+}
+
+.chip {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 5px 2px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--faint);
+  font-size: 10.5px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip:hover {
+  color: var(--text);
+}
+
+.chip.on {
+  color: var(--muted);
+}
+
+.chip.active {
+  color: var(--text);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--chip) 15%, transparent);
+  border-color: color-mix(in srgb, var(--chip) 40%, transparent);
+}
+
+.chip.preview {
+  color: var(--text);
+  border-style: dashed;
+  border-color: var(--chip);
+}
+
+/* Preview banner */
+.preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.preview-bar[hidden] {
+  display: none;
+}
+
+.link-button {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Keys: the keymap-drawer SVG, its geometry kept, restyled */
+.sheet {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 14px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+
+.sheet svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 12px 0;
+}
+
+.sheet .empty {
+  margin: 0;
+  padding: 28px 8px;
+  text-align: center;
+  color: var(--muted);
+}
+
+#sheet svg.keymap,
+#sheet svg.keymap text {
+  font-family: var(--mono) !important;
+}
+
+#sheet svg.keymap {
+  fill: var(--text) !important;
+}
+
+#sheet rect.key {
+  fill: var(--key) !important;
+  stroke: var(--key-line) !important;
+}
+
+#sheet rect.key.held,
+#sheet rect.combo.held {
+  fill: var(--layer) !important;
+  stroke: var(--layer) !important;
+}
+
+#sheet g.key.held text {
+  fill: #ffffff !important;
+}
+
+#sheet text.trans {
+  fill: var(--faint) !important;
+}
+
+#sheet text.hold,
+#sheet text.shifted {
+  fill: var(--muted) !important;
+}
+
+#sheet rect.combo,
+#sheet rect.combo-separate {
+  fill: var(--surface-2) !important;
+  stroke: var(--key-line) !important;
+}
+
+#sheet path.combo {
+  stroke: var(--faint) !important;
+}
+
+#sheet text.label {
+  fill: var(--muted) !important;
+  stroke: none !important;
+  font-weight: 500 !important;
+}
+
+#sheet g.kl-active > text.label {
+  fill: var(--layer) !important;
+}
+
+/* "Current" shows one layer, sized to fit: no scrollbar */
+body[data-mode="current"] .sheet {
+  overflow: hidden;
+}
+
+/* "Current": the hero names the layer, so the drawing drops its own label */
+body[data-mode="current"] #sheet text.label {
+  display: none;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.source-icon {
+  display: inline-flex;
+  color: var(--faint);
+}
+
+.source-icon .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.checked {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checked.error {
+  color: var(--bad);
+}
+
+.toggle {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 7px;
+  background: var(--surface-2);
+}
+
+.toggle button {
+  padding: 3px 9px;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.toggle button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.toggle button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
