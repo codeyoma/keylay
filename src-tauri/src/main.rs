@@ -4,6 +4,7 @@
 mod appearance;
 mod ble;
 mod config;
+mod devices;
 mod hid;
 mod hub;
 mod icon;

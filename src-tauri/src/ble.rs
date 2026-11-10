@@ -4,7 +4,8 @@
 //! Keyboards are already connected to the OS, so they do not advertise. They are found with
 //! `connected_devices_with_services` and the app opens its own logical connection.
 
-use crate::hub::{Hub, Transport};
+use crate::devices::Transport;
+use crate::hub::Hub;
 use crate::intake::{Connection, Sink};
 use crate::protocol::{BLE_SERVICE, BLE_STATE_CHARACTERISTIC};
 use bluest::btuuid::{characteristics::BATTERY_LEVEL, services::BATTERY};

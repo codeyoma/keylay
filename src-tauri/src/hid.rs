@@ -1,6 +1,7 @@
 //! USB: QMK keyboards with the KeyLay raw HID hook (`firmware/qmk`).
 
-use crate::hub::{Hub, Transport};
+use crate::devices::Transport;
+use crate::hub::Hub;
 use crate::intake::{Connection, Sink};
 use crate::protocol::{self, RAW_HID_USAGE, RAW_HID_USAGE_PAGE};
 use hidapi::{HidApi, HidDevice};

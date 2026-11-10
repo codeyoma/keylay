@@ -1,6 +1,6 @@
 //! The user's config file (`config.json` in the app config directory).
 
-use crate::hub::Transport;
+use crate::devices::Transport;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -58,6 +58,7 @@ impl Config {
     /// Reads the config file, writing the default one first if there is none. A file that
     /// does not parse gives the default config and the error.
     pub fn load_or_create(path: &Path) -> (Config, Option<String>) {
+        migrate_old_config(path);
         let text = match std::fs::read_to_string(path) {
             Ok(text) => text,
             Err(_) => {
@@ -95,6 +96,22 @@ impl Config {
                 && name.contains(&k.matches.to_lowercase())
                 && (k.transport.is_empty() || k.transport.eq_ignore_ascii_case(transport.as_str()))
         })
+    }
+}
+
+/// The app was called KeyTray before; its config folder was `dev.yoma.keytray`. Copies that
+/// config over the first time KeyLay starts, so the user's settings carry over.
+fn migrate_old_config(config_path: &Path) {
+    if config_path.exists() {
+        return;
+    }
+    let Some(dir) = config_path.parent() else { return };
+    let Some(old) = dir.parent().map(|p| p.join("dev.yoma.keytray").join("config.json")) else { return };
+    if old.exists() {
+        let _ = std::fs::create_dir_all(dir);
+        if let Err(e) = std::fs::copy(&old, config_path) {
+            eprintln!("keylay: cannot copy {}: {e}", old.display());
+        }
     }
 }
 

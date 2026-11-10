@@ -61,7 +61,7 @@ fn update(
         match reader.read(&source, etag) {
             Ok(Fetched::NotModified) => {
                 keymap.error = None;
-                keymap.checked_at = Some(crate::hub::now_ms());
+                keymap.checked_at = Some(crate::devices::now_ms());
             }
             Ok(Fetched::Body { svg, etag }) => {
                 cache.write(&source, &svg, etag.as_deref());
@@ -71,7 +71,7 @@ fn update(
                 }
                 keymap.etag = etag;
                 keymap.error = None;
-                keymap.checked_at = Some(crate::hub::now_ms());
+                keymap.checked_at = Some(crate::devices::now_ms());
             }
             Err(e) if keymap.svg.is_some() => keymap.error = Some(format!("Offline, showing the saved copy: {e}")),
             Err(e) => keymap.error = Some(e),
@@ -84,7 +84,7 @@ fn update(
                     keymap.revision += 1;
                 }
                 keymap.error = None;
-                keymap.checked_at = Some(crate::hub::now_ms());
+                keymap.checked_at = Some(crate::devices::now_ms());
             }
             Ok(Fetched::NotModified) => {}
             Err(e) => keymap.error = Some(e),

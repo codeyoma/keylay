@@ -2,13 +2,13 @@
 //! in 4 characters, so the title keeps its width as layers change and batteries drain. The
 //! settings window previews the title through [`preview`], so there is one set of rules.
 
-use crate::hub::{BatteryView, DeviceView, Transport};
+use crate::devices::{BatteryView, DeviceView, Transport};
 
 /// Padding that survives as width at the end of the title (a plain space may not), and that
 /// the space cleanup below leaves alone.
 const PAD: char = '\u{00A0}';
 
-pub fn title(format: &str, layer_width: usize, device: &crate::hub::DeviceView) -> String {
+pub fn title(format: &str, layer_width: usize, device: &crate::devices::DeviceView) -> String {
     let layer = device.layer_name.as_deref().map(|l| fit(l, layer_width)).unwrap_or_default();
     // Always 4 characters ("  5%", " 62%", "100%"), so the width holds as the battery drains.
     let battery = device
@@ -73,7 +73,7 @@ pub fn preview(format: &str, layer_width: usize, device: Option<&DeviceView>) ->
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hub::Transport;
+    use crate::devices::Transport;
 
     fn device(layer: Option<(&str, u8)>, batteries: &[Option<u8>]) -> DeviceView {
         DeviceView {

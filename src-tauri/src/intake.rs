@@ -3,7 +3,7 @@
 //! connection parses them and tells the [`Sink`] (the `Hub` in the app). Dropping the
 //! connection tells the sink the keyboard is gone.
 
-use crate::hub::Transport;
+use crate::devices::Transport;
 use crate::protocol::{self, Message, Report};
 use std::sync::Arc;
 
