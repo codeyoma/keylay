@@ -188,22 +188,23 @@ function renderLayers(k) {
     chips.push(none);
   }
   box.replaceChildren(...chips);
+  // Every name gets the width of the longest one plus room to type, so a chip keeps its size
+  // when it turns into a field
+  // (measured off-screen, so it also works while the tab is hidden)
+  const widths = names.map((n) => textWidth(n, "12px " + getComputedStyle(document.body).fontFamily));
+  box.style.setProperty("--name-w", `${Math.ceil(Math.max(0, ...widths)) + 16}px`);
+}
+
+const measureCanvas = document.createElement("canvas").getContext("2d");
+function textWidth(text, font) {
+  measureCanvas.font = font;
+  return measureCanvas.measureText(text).width;
 }
 
 function renameLayer(chip, k, names, i) {
   const input = document.createElement("input");
   input.value = names[i];
-  // As wide as the name it replaces, growing with the text: the name stays in the chip, out
-  // of sight, to measure the text
-  const name = chip.querySelector(".n");
-  name.classList.add("measure");
-  name.after(input);
-  const fit = () => {
-    name.textContent = input.value || " ";
-    input.style.width = `${Math.ceil(name.getBoundingClientRect().width)}px`;
-  };
-  fit();
-  input.addEventListener("input", fit);
+  chip.querySelector(".n").replaceWith(input);
   input.focus();
   input.select();
   const done = (commit) => {

@@ -382,12 +382,17 @@ input.narrow {
   border-radius: 50%;
 }
 
-/* Renaming: the name turns into a field of the same height, so the chip keeps its size. Its
-   width follows the text (set from settings.js) and the focus ring sits outside the box. */
+.chip .n {
+  width: var(--name-w, auto);
+  white-space: nowrap;
+}
+
+/* Renaming: the name turns into a field of the same size, so the chip does not move. A longer
+   name scrolls inside the field; the focus ring sits outside the box. */
 .chip input {
-  box-sizing: content-box;
+  box-sizing: border-box;
+  width: calc(var(--name-w, 80px) + 6px);
   height: 16px;
-  min-width: 3ch;
   margin: 0 -3px;
   padding: 0 3px;
   border: 0;
@@ -395,12 +400,7 @@ input.narrow {
   background: var(--bg);
   font-size: 12px;
   line-height: 16px;
-}
-
-.chip .measure {
-  position: absolute;
-  visibility: hidden;
-  white-space: pre;
+  text-align: center;
 }
 
 .chip input:focus {
