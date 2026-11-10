@@ -57,30 +57,38 @@ so the app starts with it and works offline.
 
 ## Firmware
 
-Already added (not committed) to:
+In use on:
 
 - Charybdis 3x5 (QMK): `qmk/keyboards/bastardkb/charybdis/3x5/keymaps/default/keymap.c`
   and `rules.mk` (`RAW_ENABLE = yes`).
-- Charybdis (ZMK): `charybdis/src/keylay.c`, `CMakeLists.txt`, `Kconfig`, and
-  `zephyr/module.yml` now builds the repo's code. It runs on the dongle.
-- Sweep (ZMK): `sweep/src/keylay.c`, `CMakeLists.txt`, `Kconfig`. It runs on the dongle,
-  which reports its own battery and both halves'.
-- moNa2 (ZMK): `mona/src/keylay.c`, `CMakeLists.txt`, `Kconfig`. It runs on the right
-  half (the central).
+- Charybdis, Sweep and moNa2 (ZMK): each `config/west.yml` pulls this repository as a
+  module. It runs on the Charybdis and Sweep dongles (which report their own battery and
+  both halves') and on the moNa2's right half (the central).
 
-The KeyLay key opens or closes the cheat sheet: `KL_OPEN` in QMK, `&keylay` in ZMK (a
-behavior from `src/keylay.c`, with its binding in `dts/bindings/behaviors/`). On these
+The KeyLay key opens or closes the cheat sheet: `KL_OPEN` in QMK, `&keylay` in ZMK. On these
 keyboards it is on the Adj layer, at the position of `/`.
 
 For another keyboard:
 
 - **QMK**: paste `firmware/qmk/keylay.c` into `keymap.c` and add `RAW_ENABLE = yes` to the
   keymap's `rules.mk`. With VIA enabled, rename `raw_hid_receive` to `raw_hid_receive_kb`.
-- **ZMK** (v0.3): copy `firmware/zmk/src/keylay.c` into the config repo's `src/`, and the
-  `Kconfig` and `CMakeLists.txt` entries into the repo's own (the repo must be a Zephyr
-  module, with `zephyr/module.yml`). `CONFIG_ZMK_KEYLAY` turns itself on for the central.
-  For peripheral batteries, set `CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING=y` on
-  the central.
+- **ZMK** (v0.3): this repository is a ZMK module (`zephyr/module.yml`, code in
+  `firmware/zmk`). Add it to the config's `config/west.yml`:
+
+  ```yaml
+  remotes:
+    - name: codeyoma
+      url-base: https://github.com/codeyoma
+  projects:
+    - name: keylay
+      remote: codeyoma
+      revision: main
+  ```
+
+  `CONFIG_ZMK_KEYLAY` turns itself on for the central. For the KeyLay key, declare the
+  behavior in the keymap (`keylay: keylay { compatible = "zmk,behavior-keylay";
+  #binding-cells = <0>; };` inside `behaviors`) and bind `&keylay`. For peripheral
+  batteries, set `CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING=y` on the central.
 
 After flashing a ZMK keyboard, the computer may still have the old list of Bluetooth
 services. If the layer does not show up, turn Bluetooth off and on, or remove and pair the

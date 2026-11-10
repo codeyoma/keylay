@@ -1,0 +1,8 @@
+# This repository is a ZMK (Zephyr) module: a keyboard config adds it to its west.yml and
+# gets CONFIG_ZMK_KEYLAY and the &keylay behavior. The code is in firmware/zmk.
+name: zmk-keylay
+build:
+  cmake: firmware/zmk
+  kconfig: firmware/zmk/Kconfig
+  settings:
+    dts_root: firmware/zmk
