@@ -27,11 +27,14 @@ fn reduce_transparency() -> bool {
 pub fn apply(app: &AppHandle, mode: &str) {
     for label in [crate::popover::LABEL, crate::settings::LABEL] {
         let Some(window) = app.get_webview_window(label) else { continue };
-        let _ = window.set_effects(material(mode));
+        let _ = window.set_effects(material(label, mode));
     }
 }
 
-pub fn material(mode: &str) -> Option<tauri::utils::config::WindowEffectsConfig> {
+/// The material for a window. The cheat sheet has no frame, so the material is rounded like
+/// its panel (24 pt in style.css); the settings window has a normal frame, which rounds the
+/// corners itself, so its material fills the window.
+pub fn material(label: &str, mode: &str) -> Option<tauri::utils::config::WindowEffectsConfig> {
     if mode == "solid" {
         return None;
     }
@@ -41,7 +44,14 @@ pub fn material(mode: &str) -> Option<tauri::utils::config::WindowEffectsConfig>
     #[cfg(target_os = "windows")]
     let effect = Effect::Acrylic;
     #[cfg(not(any(target_os = "macos", target_os = "windows")))]
-    return None;
+    return {
+        let _ = label;
+        None
+    };
     #[cfg(any(target_os = "macos", target_os = "windows"))]
-    Some(EffectsBuilder::new().effect(effect).state(EffectState::Active).radius(24.0).build())
+    let builder = EffectsBuilder::new().effect(effect).state(EffectState::Active);
+    #[cfg(any(target_os = "macos", target_os = "windows"))]
+    let builder = if label == crate::popover::LABEL { builder.radius(24.0) } else { builder };
+    #[cfg(any(target_os = "macos", target_os = "windows"))]
+    Some(builder.build())
 }

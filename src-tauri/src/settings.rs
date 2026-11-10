@@ -24,7 +24,7 @@ pub fn open(app: &AppHandle) {
             // Glass or solid, from the setting; set after the webview exists, so the
             // material goes behind it
             let mode = crate::appearance::effective(&app.state::<std::sync::Arc<crate::hub::Hub>>().config().appearance);
-            let _ = window.set_effects(crate::appearance::material(mode));
+            let _ = window.set_effects(crate::appearance::material(LABEL, mode));
             let _ = window.set_focus();
         }
         Err(e) => eprintln!("keylay: cannot open settings: {e}"),
