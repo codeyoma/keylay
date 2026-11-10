@@ -138,24 +138,7 @@ fn main() {
             tray::build(&handle)?;
             tray::refresh(&handle, &hub.snapshot());
 
-            // Keymaps: the cached copies first, then a check with GitHub every 15 minutes
-            // (and when the popover opens, see popover::show)
-            {
-                let hub = hub.clone();
-                std::thread::spawn(move || loop {
-                    hub.refresh_keymaps();
-                    // The interval is a setting (0 = never), so look at it every minute
-                    let mut waited = 0;
-                    loop {
-                        std::thread::sleep(Duration::from_secs(60));
-                        waited += 1;
-                        let every = hub.config().keymap_check_minutes;
-                        if every > 0 && waited >= every {
-                            break;
-                        }
-                    }
-                });
-            }
+            hub.start_keymap_checks();
             hid::start(hub.clone());
             ble::start(hub.clone());
             // Debugging aid: open the popover right away, centered and pinned (so it does not

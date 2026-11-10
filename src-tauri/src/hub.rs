@@ -2,14 +2,14 @@
 //! the tray and sends a `snapshot` event to the popover.
 
 use crate::config::{Config, KeyboardConfig};
-use crate::keymap::{self, Keymap};
+use crate::keymap;
 use crate::protocol::Report;
 use crate::tray;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, RwLock};
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -113,12 +113,9 @@ impl DeviceView {
 pub struct Hub {
     app: AppHandle,
     pub config_path: PathBuf,
-    cache_dir: PathBuf,
     config: RwLock<Config>,
     config_error: RwLock<Option<String>>,
-    keymaps: RwLock<HashMap<String, Keymap>>,
-    /// One keymap check at a time, and when the last one ran
-    keymap_check: Mutex<Option<Instant>>,
+    keymaps: keymap::Store,
     devices: Mutex<HashMap<String, Device>>,
 }
 
@@ -129,11 +126,9 @@ impl Hub {
         Hub {
             app,
             config_path,
-            cache_dir,
             config: RwLock::new(config),
             config_error: RwLock::new(config_error),
-            keymaps: RwLock::new(HashMap::new()),
-            keymap_check: Mutex::new(None),
+            keymaps: keymap::Store::new(cache_dir),
             devices: Mutex::new(HashMap::new()),
         }
     }
@@ -147,31 +142,36 @@ impl Hub {
         self.notify();
     }
 
-    /// Checks every keymap against its source (a 304 from GitHub when nothing changed), then
-    /// tells the tray and the popover, which also shows when the check ran. Blocks on the
-    /// network.
+    /// Checks every keymap against its source, then tells the tray and the popover (which
+    /// also shows when the check ran). Blocks on the network.
     pub fn refresh_keymaps(&self) {
-        // Holding the lock for the whole check keeps two checks from running at once
-        let mut last_check = self.keymap_check.lock().unwrap();
         let keyboards = self.config.read().unwrap().keyboards.clone();
-        let previous = self.keymaps.read().unwrap().clone();
-        let keymaps: HashMap<String, Keymap> = keyboards
-            .iter()
-            .map(|k| (k.name.clone(), keymap::refresh(k, previous.get(&k.name), &self.cache_dir).0))
-            .collect();
-        *self.keymaps.write().unwrap() = keymaps;
-        *last_check = Some(Instant::now());
-        drop(last_check);
+        self.keymaps.refresh(&keyboards);
         self.notify();
     }
 
-    /// Checks the keymaps in the background unless that was done in the last `max_age`.
-    pub fn refresh_keymaps_if_older_than(self: &Arc<Self>, max_age: Duration) {
-        let fresh = match self.keymap_check.try_lock() {
-            Ok(last) => last.is_some_and(|t| t.elapsed() < max_age),
-            Err(_) => true, // a check is running
-        };
-        if !fresh {
+    /// Checks the keymaps in the background now, then every `keymap_check_minutes` (a
+    /// setting, 0 = never, so it is read again every minute).
+    pub fn start_keymap_checks(self: &Arc<Self>) {
+        let hub = self.clone();
+        std::thread::spawn(move || loop {
+            hub.refresh_keymaps();
+            let mut waited = 0;
+            loop {
+                std::thread::sleep(Duration::from_secs(60));
+                waited += 1;
+                let every = hub.config().keymap_check_minutes;
+                if every > 0 && waited >= every {
+                    break;
+                }
+            }
+        });
+    }
+
+    /// The cheat sheet opened, which is when an outdated keymap matters: checks in the
+    /// background unless that was just done.
+    pub fn cheat_sheet_opened(self: &Arc<Self>) {
+        if !self.keymaps.checked_within(Duration::from_secs(60)) {
             let hub = self.clone();
             std::thread::spawn(move || hub.refresh_keymaps());
         }
@@ -199,7 +199,7 @@ impl Hub {
     }
 
     pub fn keymap_svg(&self, keyboard: &str) -> Option<String> {
-        self.keymaps.read().unwrap().get(keyboard).and_then(|k| k.svg.clone())
+        self.keymaps.svg(keyboard)
     }
 
     /// A state message from a keyboard with the KeyLay firmware hook.
@@ -263,7 +263,7 @@ impl Hub {
 
     pub fn snapshot(&self) -> Snapshot {
         let config = self.config.read().unwrap();
-        let keymaps = self.keymaps.read().unwrap();
+        let keymaps = self.keymaps.all();
         let devices = self.devices.lock().unwrap();
 
         let mut sorted: Vec<(&String, &Device)> = devices.iter().collect();

@@ -133,8 +133,7 @@ pub fn show(app: &AppHandle, anchor: Option<Rect>, keyboard: Option<String>) {
     let _ = window.show();
     let _ = window.set_focus();
     let _ = app.emit_to(LABEL, "popover-shown", keyboard);
-    // Opening the cheat sheet is when an outdated keymap matters; check unless just done
-    app.state::<Arc<Hub>>().refresh_keymaps_if_older_than(Duration::from_secs(60));
+    app.state::<Arc<Hub>>().cheat_sheet_opened();
 }
 
 /// Hides the popover (another window takes over, or it lost the focus).
