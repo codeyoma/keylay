@@ -4898,7 +4898,7 @@
                               "id": "l3uEEJ",
                               "name": "Detail",
                               "fill": "$glass-muted",
-                              "content": "Last seen 2 hours ago · showing all layers",
+                              "content": "Last seen 2 hours ago · pick a layer below",
                               "fontFamily": "$font-ui",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -4921,7 +4921,7 @@
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
-                          "stroke": "$glass-line",
+                          "stroke": "$glass-muted",
                           "strokeWidth": 1,
                           "gap": 4,
                           "padding": [
@@ -4948,7 +4948,7 @@
                               "type": "text",
                               "id": "RGF3f",
                               "name": "Chip Name",
-                              "fill": "$glass-faint",
+                              "fill": "$text",
                               "content": "Base",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
@@ -5318,8 +5318,11 @@
                     {
                       "type": "frame",
                       "id": "TNnZM",
+                      "x": 18,
+                      "y": 18,
                       "name": "Layer Heading",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(424)",
                       "gap": 8,
                       "padding": [
                         0,
@@ -5913,7 +5916,10 @@
                     {
                       "type": "text",
                       "id": "zdJMh",
+                      "x": 18,
+                      "y": 214,
                       "name": "More",
+                      "enabled": false,
                       "fill": "$glass-faint",
                       "content": "↓  8 more layers",
                       "fontFamily": "$font-mono",
@@ -5966,7 +5972,6 @@
                       "type": "frame",
                       "id": "OApSg",
                       "name": "View Toggle",
-                      "opacity": 0.45,
                       "fill": "$glass-chip",
                       "cornerRadius": 12,
                       "padding": 2,
@@ -5975,7 +5980,7 @@
                           "type": "frame",
                           "id": "icY94",
                           "name": "Seg Current",
-                          "fill": "#00000000",
+                          "fill": "$glass-key",
                           "cornerRadius": 10,
                           "padding": [
                             3,
@@ -5986,11 +5991,11 @@
                               "type": "text",
                               "id": "CO7eu",
                               "name": "Seg Label",
-                              "fill": "$glass-muted",
+                              "fill": "$text",
                               "content": "Current",
                               "fontFamily": "$font-ui",
                               "fontSize": 11,
-                              "fontWeight": "normal"
+                              "fontWeight": "600"
                             }
                           ]
                         },
@@ -5998,7 +6003,7 @@
                           "type": "frame",
                           "id": "whjxb",
                           "name": "Seg All",
-                          "fill": "$glass-key",
+                          "fill": "#00000000",
                           "cornerRadius": 10,
                           "padding": [
                             3,
@@ -6009,11 +6014,11 @@
                               "type": "text",
                               "id": "EuFoR",
                               "name": "Seg Label",
-                              "fill": "$text",
+                              "fill": "$glass-muted",
                               "content": "All",
                               "fontFamily": "$font-ui",
                               "fontSize": 11,
-                              "fontWeight": "600"
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -14582,7 +14587,8 @@
                               "fill": "$glass-muted",
                               "content": "General",
                               "fontFamily": "$font-ui",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -15192,7 +15198,8 @@
                                           "fill": "$glass-muted",
                                           "content": "Any",
                                           "fontFamily": "$font-ui",
-                                          "fontSize": 12
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     },
@@ -15214,7 +15221,8 @@
                                           "fill": "$glass-muted",
                                           "content": "USB",
                                           "fontFamily": "$font-ui",
-                                          "fontSize": 12
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     },
@@ -15372,302 +15380,364 @@
                               "id": "NajFV",
                               "name": "Layer Chips",
                               "width": "fill_container",
+                              "layout": "vertical",
                               "gap": 6,
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "keQHa",
-                                  "name": "Chip Base",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
+                                  "id": "F5mWC",
+                                  "name": "Chip Row 1",
                                   "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "ellipse",
-                                      "id": "uRgje",
-                                      "name": "Dot",
-                                      "fill": "#8A8F98",
-                                      "width": 6,
-                                      "height": 6
+                                      "type": "frame",
+                                      "id": "keQHa",
+                                      "name": "Chip Base",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "uRgje",
+                                          "name": "Dot",
+                                          "fill": "#8A8F98",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "QfU5v",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Base",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     },
                                     {
-                                      "type": "text",
-                                      "id": "QfU5v",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Base",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
+                                      "type": "frame",
+                                      "id": "fEm7m",
+                                      "name": "Chip Game",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "X0q68G",
+                                          "name": "Dot",
+                                          "fill": "#3B82F6",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "y9Gtg",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Game",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "IqB2g",
+                                      "name": "Chip Lower",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "KREKf",
+                                          "name": "Dot",
+                                          "fill": "#10B981",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "ahrJQ",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Lower",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "W4MjJ",
+                                      "name": "Chip Raise",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "fneuQ",
+                                          "name": "Dot",
+                                          "fill": "#F59E0B",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "jKg5e",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Raise",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "opKKK",
+                                      "name": "Chip Adj",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "CWf0i",
+                                          "name": "Dot",
+                                          "fill": "#8B5CF6",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "yUj9r",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Adj",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "NgDcc",
+                                      "name": "Chip Mouse",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "JgMhJ",
+                                          "name": "Dot",
+                                          "fill": "#EC4899",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Mbqg9",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Mouse",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "fEm7m",
-                                  "name": "Chip Game",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
+                                  "id": "OLNzc",
+                                  "name": "Chip Row 2",
                                   "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "ellipse",
-                                      "id": "X0q68G",
-                                      "name": "Dot",
-                                      "fill": "#3B82F6",
-                                      "width": 6,
-                                      "height": 6
+                                      "type": "frame",
+                                      "id": "qpBZd",
+                                      "name": "Chip Num",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "HM9CE",
+                                          "name": "Dot",
+                                          "fill": "#14B8A6",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "oVWJT",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Num",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     },
                                     {
-                                      "type": "text",
-                                      "id": "y9Gtg",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Game",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "IqB2g",
-                                  "name": "Chip Lower",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "KREKf",
-                                      "name": "Dot",
-                                      "fill": "#10B981",
-                                      "width": 6,
-                                      "height": 6
+                                      "type": "frame",
+                                      "id": "Gx07b",
+                                      "name": "Chip Sym",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "CoPOq",
+                                          "name": "Dot",
+                                          "fill": "#8A8F98",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "HNiCf",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Sym",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     },
                                     {
-                                      "type": "text",
-                                      "id": "ahrJQ",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Lower",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "W4MjJ",
-                                  "name": "Chip Raise",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "fneuQ",
-                                      "name": "Dot",
-                                      "fill": "#F59E0B",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "jKg5e",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Raise",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "opKKK",
-                                  "name": "Chip Adj",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "CWf0i",
-                                      "name": "Dot",
-                                      "fill": "#8B5CF6",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "yUj9r",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Adj",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "NgDcc",
-                                  "name": "Chip Mouse",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "JgMhJ",
-                                      "name": "Dot",
-                                      "fill": "#EC4899",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "Mbqg9",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Mouse",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "qpBZd",
-                                  "name": "Chip Num",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "HM9CE",
-                                      "name": "Dot",
-                                      "fill": "#14B8A6",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "oVWJT",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Num",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "Gx07b",
-                                  "name": "Chip Sym",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "CoPOq",
-                                      "name": "Dot",
-                                      "fill": "#8A8F98",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "HNiCf",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Sym",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "aJuJ8",
-                                  "name": "Chip Fn",
-                                  "fill": "$glass-chip",
-                                  "cornerRadius": 6,
-                                  "gap": 6,
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "ellipse",
-                                      "id": "p5I1a",
-                                      "name": "Dot",
-                                      "fill": "#3B82F6",
-                                      "width": 6,
-                                      "height": 6
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "p9BYZ4",
-                                      "name": "L",
-                                      "fill": "$text",
-                                      "content": "Fn",
-                                      "fontFamily": "$font-ui",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
+                                      "type": "frame",
+                                      "id": "aJuJ8",
+                                      "name": "Chip Fn",
+                                      "width": 83,
+                                      "height": 24,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 6,
+                                      "padding": [
+                                        0,
+                                        8
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "ellipse",
+                                          "id": "p5I1a",
+                                          "name": "Dot",
+                                          "fill": "#3B82F6",
+                                          "width": 6,
+                                          "height": 6
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "p9BYZ4",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Fn",
+                                          "textAlign": "center",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -16082,7 +16152,8 @@
                               "fill": "$glass-muted",
                               "content": "Keyboards",
                               "fontFamily": "$font-ui",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -16190,76 +16261,216 @@
                         },
                         {
                           "type": "frame",
-                          "id": "N3PwwX",
-                          "name": "Segmented",
-                          "fill": "$glass-chip",
-                          "cornerRadius": 7,
-                          "padding": 2,
+                          "id": "H13Hc1",
+                          "name": "Title Parts",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "PmmJX",
-                              "name": "Seg Layer + battery",
-                              "fill": "$glass-key",
-                              "cornerRadius": 5,
-                              "padding": [
-                                4,
-                                12
-                              ],
+                              "id": "Ypq56",
+                              "name": "Shown Row",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "alignItems": "center",
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "ZHTMj",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Layer + battery",
+                                  "id": "Q8NwN0",
+                                  "name": "Zone Label",
+                                  "fill": "$glass-muted",
+                                  "textGrowth": "fixed-width",
+                                  "width": 48,
+                                  "content": "Shown",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 12,
-                                  "fontWeight": "600"
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "SPnrT",
+                                  "name": "Shown",
+                                  "width": "fill_container",
+                                  "height": 36,
+                                  "fill": "$glass-well",
+                                  "cornerRadius": 8,
+                                  "gap": 6,
+                                  "padding": 5,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "w9Tt30",
+                                      "name": "Part Layer",
+                                      "height": 26,
+                                      "fill": "$glass-key",
+                                      "cornerRadius": 6,
+                                      "effect": {
+                                        "type": "shadow",
+                                        "shadowType": "outer",
+                                        "color": "#0000001a",
+                                        "offset": {
+                                          "x": 0,
+                                          "y": 1
+                                        },
+                                        "blur": 2
+                                      },
+                                      "gap": 4,
+                                      "padding": [
+                                        0,
+                                        10,
+                                        0,
+                                        4
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "t5B73",
+                                          "name": "Grip",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "grip-vertical",
+                                          "library": "lucide",
+                                          "fill": "$glass-faint"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "kXdSf",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "content": "Layer",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "600"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "R68Uo5",
+                                      "name": "Part Battery",
+                                      "height": 26,
+                                      "fill": "$glass-key",
+                                      "cornerRadius": 6,
+                                      "effect": {
+                                        "type": "shadow",
+                                        "shadowType": "outer",
+                                        "color": "#0000001a",
+                                        "offset": {
+                                          "x": 0,
+                                          "y": 1
+                                        },
+                                        "blur": 2
+                                      },
+                                      "gap": 4,
+                                      "padding": [
+                                        0,
+                                        10,
+                                        0,
+                                        4
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "btTa0",
+                                          "name": "Grip",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "grip-vertical",
+                                          "library": "lucide",
+                                          "fill": "$glass-faint"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "HyWf9",
+                                          "name": "L",
+                                          "fill": "$text",
+                                          "content": "Battery",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "600"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 }
                               ]
                             },
                             {
                               "type": "frame",
-                              "id": "yT3pG",
-                              "name": "Seg Layer",
-                              "fill": "#00000000",
-                              "cornerRadius": 5,
-                              "padding": [
-                                4,
-                                12
-                              ],
+                              "id": "l5IwYu",
+                              "name": "Hidden Row",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "alignItems": "center",
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "tbq8z",
-                                  "name": "L",
+                                  "id": "v4w7k",
+                                  "name": "Zone Label",
                                   "fill": "$glass-muted",
-                                  "content": "Layer",
+                                  "textGrowth": "fixed-width",
+                                  "width": 48,
+                                  "content": "Hidden",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 12
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "bf4An",
-                              "name": "Seg Keyboard + layer",
-                              "fill": "#00000000",
-                              "cornerRadius": 5,
-                              "padding": [
-                                4,
-                                12
-                              ],
-                              "children": [
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
                                 {
-                                  "type": "text",
-                                  "id": "S2CJq",
-                                  "name": "L",
-                                  "fill": "$glass-muted",
-                                  "content": "Keyboard + layer",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 12
+                                  "type": "frame",
+                                  "id": "hh7B9",
+                                  "name": "Hidden",
+                                  "width": "fill_container",
+                                  "height": 36,
+                                  "fill": "#00000000",
+                                  "cornerRadius": 8,
+                                  "stroke": "$glass-line",
+                                  "gap": 6,
+                                  "padding": 5,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "U0xNm",
+                                      "name": "Part Keyboard",
+                                      "height": 26,
+                                      "fill": "$glass-chip",
+                                      "cornerRadius": 6,
+                                      "gap": 4,
+                                      "padding": [
+                                        0,
+                                        10,
+                                        0,
+                                        4
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "R1NCm",
+                                          "name": "Grip",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "grip-vertical",
+                                          "library": "lucide",
+                                          "fill": "$glass-faint"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "ml5hX",
+                                          "name": "L",
+                                          "fill": "$glass-muted",
+                                          "content": "Keyboard",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -16267,12 +16478,12 @@
                         },
                         {
                           "type": "text",
-                          "id": "zUCyh",
+                          "id": "xnFmD",
                           "name": "Hint",
                           "fill": "$glass-muted",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Custom: {keyboard} {layer} {battery}",
+                          "content": "Drag to change the order; drag a part to Hidden to leave it out. A click moves it across.",
                           "fontFamily": "$font-ui",
                           "fontSize": 11,
                           "fontWeight": "normal"
@@ -17155,7 +17366,8 @@
                                   "fill": "$glass-muted",
                                   "content": "5 min",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -17200,7 +17412,8 @@
                                   "fill": "$glass-muted",
                                   "content": "1 hour",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -17222,7 +17435,8 @@
                                   "fill": "$glass-muted",
                                   "content": "Never",
                                   "fontFamily": "$font-ui",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -18420,302 +18634,364 @@
                           "id": "DEOhn",
                           "name": "Layer Chips",
                           "width": "fill_container",
+                          "layout": "vertical",
                           "gap": 5.4,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "lSiM5",
-                              "name": "Chip Base",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
+                              "id": "nb9lb",
+                              "name": "Chip Row 1",
                               "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "FmUDx",
-                                  "name": "Dot",
-                                  "fill": "#8A8F98",
-                                  "width": 5.4,
-                                  "height": 5.4
+                                  "type": "frame",
+                                  "id": "lSiM5",
+                                  "name": "Chip Base",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "FmUDx",
+                                      "name": "Dot",
+                                      "fill": "#8A8F98",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "T9nWx",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Base",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "T9nWx",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Base",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "usg5b",
+                                  "name": "Chip Game",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "TW5u8",
+                                      "name": "Dot",
+                                      "fill": "#3B82F6",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "zoEDs",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Game",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "g0Uh5",
+                                  "name": "Chip Lower",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "v9DUk",
+                                      "name": "Dot",
+                                      "fill": "#10B981",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "P6eBg",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Lower",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Eh9Rh",
+                                  "name": "Chip Raise",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "UDxDv",
+                                      "name": "Dot",
+                                      "fill": "#F59E0B",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "MHXc6",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Raise",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "qKnrW",
+                                  "name": "Chip Adj",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "K6UK4",
+                                      "name": "Dot",
+                                      "fill": "#8B5CF6",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "yExHI",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Adj",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "kYop4",
+                                  "name": "Chip Mouse",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "v8SP70",
+                                      "name": "Dot",
+                                      "fill": "#EC4899",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "B0sUl",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Mouse",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             },
                             {
                               "type": "frame",
-                              "id": "usg5b",
-                              "name": "Chip Game",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
+                              "id": "YDOfg",
+                              "name": "Chip Row 2",
                               "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "TW5u8",
-                                  "name": "Dot",
-                                  "fill": "#3B82F6",
-                                  "width": 5.4,
-                                  "height": 5.4
+                                  "type": "frame",
+                                  "id": "NDRxR",
+                                  "name": "Chip Num",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "cZ3eR",
+                                      "name": "Dot",
+                                      "fill": "#14B8A6",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "CZNLc",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Num",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "zoEDs",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Game",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "g0Uh5",
-                              "name": "Chip Lower",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "v9DUk",
-                                  "name": "Dot",
-                                  "fill": "#10B981",
-                                  "width": 5.4,
-                                  "height": 5.4
+                                  "type": "frame",
+                                  "id": "eu2KS",
+                                  "name": "Chip Sym",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "yVCG4",
+                                      "name": "Dot",
+                                      "fill": "#8A8F98",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "wBH6z",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Sym",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "P6eBg",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Lower",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Eh9Rh",
-                              "name": "Chip Raise",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "UDxDv",
-                                  "name": "Dot",
-                                  "fill": "#F59E0B",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "MHXc6",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Raise",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "qKnrW",
-                              "name": "Chip Adj",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "K6UK4",
-                                  "name": "Dot",
-                                  "fill": "#8B5CF6",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "yExHI",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Adj",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "kYop4",
-                              "name": "Chip Mouse",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "v8SP70",
-                                  "name": "Dot",
-                                  "fill": "#EC4899",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "B0sUl",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Mouse",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "NDRxR",
-                              "name": "Chip Num",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "cZ3eR",
-                                  "name": "Dot",
-                                  "fill": "#14B8A6",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "CZNLc",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Num",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "eu2KS",
-                              "name": "Chip Sym",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "yVCG4",
-                                  "name": "Dot",
-                                  "fill": "#8A8F98",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "wBH6z",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Sym",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "B4hCi",
-                              "name": "Chip Fn",
-                              "fill": "$glass-chip",
-                              "cornerRadius": 5.4,
-                              "gap": 5.4,
-                              "padding": [
-                                3.6,
-                                7.2
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "YLpFX",
-                                  "name": "Dot",
-                                  "fill": "#3B82F6",
-                                  "width": 5.4,
-                                  "height": 5.4
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "HiUf2",
-                                  "name": "L",
-                                  "fill": "$text",
-                                  "content": "Fn",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 10.8,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "B4hCi",
+                                  "name": "Chip Fn",
+                                  "width": 75,
+                                  "height": 21.6,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 5.4,
+                                  "gap": 5.4,
+                                  "padding": [
+                                    0,
+                                    7.2
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "YLpFX",
+                                      "name": "Dot",
+                                      "fill": "#3B82F6",
+                                      "width": 5.4,
+                                      "height": 5.4
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "HiUf2",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Fn",
+                                      "textAlign": "center",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 10.8,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -19417,78 +19693,216 @@
                     },
                     {
                       "type": "frame",
-                      "id": "mqdt8",
-                      "name": "Segmented",
-                      "fill": "$glass-chip",
-                      "cornerRadius": 6.3,
-                      "padding": 1.8,
+                      "id": "I2hW51",
+                      "name": "Title Parts",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Ui7nt",
-                          "name": "Seg Layer + battery",
-                          "fill": "$glass-key",
-                          "cornerRadius": 4.5,
-                          "padding": [
-                            3.6,
-                            10.8
-                          ],
+                          "id": "D7HMMR",
+                          "name": "Shown Row",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
                           "children": [
                             {
                               "type": "text",
-                              "id": "ojpqA",
-                              "name": "L",
-                              "fill": "$text",
-                              "content": "Layer + battery",
+                              "id": "wF11U",
+                              "name": "Zone Label",
+                              "fill": "$glass-muted",
+                              "textGrowth": "fixed-width",
+                              "width": 48,
+                              "content": "Shown",
                               "fontFamily": "$font-ui",
-                              "fontSize": 10.8,
-                              "fontWeight": "600"
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "bd0ui",
+                              "name": "Shown",
+                              "width": "fill_container",
+                              "height": 36,
+                              "fill": "$glass-well",
+                              "cornerRadius": 8,
+                              "gap": 6,
+                              "padding": 5,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "I1kzy",
+                                  "name": "Part Layer",
+                                  "height": 26,
+                                  "fill": "$glass-key",
+                                  "cornerRadius": 6,
+                                  "effect": {
+                                    "type": "shadow",
+                                    "shadowType": "outer",
+                                    "color": "#0000001a",
+                                    "offset": {
+                                      "x": 0,
+                                      "y": 1
+                                    },
+                                    "blur": 2
+                                  },
+                                  "gap": 4,
+                                  "padding": [
+                                    0,
+                                    10,
+                                    0,
+                                    4
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "mTurZ",
+                                      "name": "Grip",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "grip-vertical",
+                                      "library": "lucide",
+                                      "fill": "$glass-faint"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "S3ksH",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "content": "Layer",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "vJJLO",
+                                  "name": "Part Battery",
+                                  "height": 26,
+                                  "fill": "$glass-key",
+                                  "cornerRadius": 6,
+                                  "effect": {
+                                    "type": "shadow",
+                                    "shadowType": "outer",
+                                    "color": "#0000001a",
+                                    "offset": {
+                                      "x": 0,
+                                      "y": 1
+                                    },
+                                    "blur": 2
+                                  },
+                                  "gap": 4,
+                                  "padding": [
+                                    0,
+                                    10,
+                                    0,
+                                    4
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "G4p2L",
+                                      "name": "Grip",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "grip-vertical",
+                                      "library": "lucide",
+                                      "fill": "$glass-faint"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "z8Qry",
+                                      "name": "L",
+                                      "fill": "$text",
+                                      "content": "Battery",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                }
+                              ]
                             }
                           ]
                         },
                         {
                           "type": "frame",
-                          "id": "K6F7Vk",
-                          "name": "Seg Layer",
-                          "fill": "#00000000",
-                          "cornerRadius": 4.5,
-                          "padding": [
-                            3.6,
-                            10.8
-                          ],
+                          "id": "Grip3",
+                          "name": "Hidden Row",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
                           "children": [
                             {
                               "type": "text",
-                              "id": "Kjl1L",
-                              "name": "L",
+                              "id": "YbmEs",
+                              "name": "Zone Label",
                               "fill": "$glass-muted",
-                              "content": "Layer",
+                              "textGrowth": "fixed-width",
+                              "width": 48,
+                              "content": "Hidden",
                               "fontFamily": "$font-ui",
-                              "fontSize": 10.8,
+                              "fontSize": 11,
                               "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "G3ovB",
-                          "name": "Seg Keyboard + layer",
-                          "fill": "#00000000",
-                          "cornerRadius": 4.5,
-                          "padding": [
-                            3.6,
-                            10.8
-                          ],
-                          "children": [
+                            },
                             {
-                              "type": "text",
-                              "id": "adEZG",
-                              "name": "L",
-                              "fill": "$glass-muted",
-                              "content": "Keyboard + layer",
-                              "fontFamily": "$font-ui",
-                              "fontSize": 10.8,
-                              "fontWeight": "normal"
+                              "type": "frame",
+                              "id": "Po54H",
+                              "name": "Hidden",
+                              "width": "fill_container",
+                              "height": 36,
+                              "fill": "#00000000",
+                              "cornerRadius": 8,
+                              "stroke": "$glass-line",
+                              "gap": 6,
+                              "padding": 5,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "t6kae",
+                                  "name": "Part Keyboard",
+                                  "height": 26,
+                                  "fill": "$glass-chip",
+                                  "cornerRadius": 6,
+                                  "gap": 4,
+                                  "padding": [
+                                    0,
+                                    10,
+                                    0,
+                                    4
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "acY5l",
+                                      "name": "Grip",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "grip-vertical",
+                                      "library": "lucide",
+                                      "fill": "$glass-faint"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "KxtYe",
+                                      "name": "L",
+                                      "fill": "$glass-muted",
+                                      "content": "Keyboard",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
                             }
                           ]
                         }
@@ -19496,14 +19910,14 @@
                     },
                     {
                       "type": "text",
-                      "id": "HTq3a",
+                      "id": "W6LLg",
                       "name": "Hint",
                       "fill": "$glass-muted",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Custom: {keyboard} {layer} {battery}",
+                      "content": "Drag to change the order; drag a part to Hidden to leave it out. A click moves it across.",
                       "fontFamily": "$font-ui",
-                      "fontSize": 9.9,
+                      "fontSize": 11,
                       "fontWeight": "normal"
                     }
                   ]
