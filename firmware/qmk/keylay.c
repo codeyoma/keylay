@@ -1,6 +1,8 @@
 // KeyLay: reports the active layer to the KeyLay menu bar app over raw HID.
 // See firmware/PROTOCOL.md. Paste this into keymap.c and add `RAW_ENABLE = yes` to the
 // keymap's rules.mk. If VIA is enabled, rename raw_hid_receive to raw_hid_receive_kb.
+// For the KeyLay key, declare `enum custom_keycodes { KL_OPEN = SAFE_RANGE };` before the
+// keymaps, put KL_OPEN in a layer, and merge process_record_user below into yours.
 #ifdef RAW_ENABLE
 #    include "raw_hid.h"
 
@@ -8,6 +10,8 @@
 #    define KEYLAY_VERSION 0x01
 #    define KEYLAY_MSG_STATE 0x01
 #    define KEYLAY_MSG_GET_STATE 0x02
+#    define KEYLAY_MSG_COMMAND 0x03
+#    define KEYLAY_CMD_TOGGLE_POPOVER 0x01
 #    define KEYLAY_REPORT_LEN 32 // RAW_EPSIZE
 
 static void keylay_send_state(layer_state_t state) {
@@ -22,6 +26,16 @@ static void keylay_send_state(layer_state_t state) {
     report[6]                   = (mask >> 16) & 0xFF;
     report[7]                   = (mask >> 24) & 0xFF;
     report[8]                   = 0; // no batteries on a wired keyboard
+    raw_hid_send(report, sizeof(report));
+}
+
+// KL_OPEN: tells the app to open or close its cheat sheet.
+static void keylay_send_command(uint8_t command) {
+    uint8_t report[KEYLAY_REPORT_LEN] = {0};
+    report[0]                         = KEYLAY_MAGIC;
+    report[1]                         = KEYLAY_VERSION;
+    report[2]                         = KEYLAY_MSG_COMMAND;
+    report[3]                         = command;
     raw_hid_send(report, sizeof(report));
 }
 
@@ -47,3 +61,15 @@ void housekeeping_task_user(void) {
     }
 }
 #endif
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == KL_OPEN) {
+#ifdef RAW_ENABLE
+        if (record->event.pressed) {
+            keylay_send_command(KEYLAY_CMD_TOGGLE_POPOVER);
+        }
+#endif
+        return false;
+    }
+    return true;
+}

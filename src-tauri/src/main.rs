@@ -50,7 +50,7 @@ fn set_pinned(hub: State<'_, Arc<Hub>>, pinned: bool) {
 #[tauri::command]
 fn hide_popover(app: AppHandle) {
     if let Some(window) = app.get_webview_window(popover::LABEL) {
-        popover::hide(&window);
+        popover::dismiss(&app, &window);
     }
 }
 
@@ -120,7 +120,7 @@ fn main() {
                 std::thread::spawn(move || {
                     std::thread::sleep(Duration::from_millis(1500));
                     let app = handle.clone();
-                    let _ = handle.run_on_main_thread(move || popover::show(&app, None));
+                    let _ = handle.run_on_main_thread(move || popover::show(&app, None, None));
                 });
             }
             Ok(())

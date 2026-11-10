@@ -13,6 +13,9 @@
 //! | 8      | 1    | battery count N                                              |
 //! | 9      | N    | battery levels 0-100, `0xFF` = unknown; 0 = the keyboard (or |
 //! |        |      | split central), 1.. = split peripherals                      |
+//!
+//! A command message (type `0x03`) comes from the KeyLay key in the keymap: byte 3 is the
+//! command, `0x01` = open or close the cheat sheet.
 
 use uuid::Uuid;
 
@@ -20,6 +23,8 @@ pub const MAGIC: u8 = 0x4B;
 pub const VERSION: u8 = 0x01;
 pub const MSG_STATE: u8 = 0x01;
 pub const MSG_GET_STATE: u8 = 0x02;
+pub const MSG_COMMAND: u8 = 0x03;
+pub const CMD_TOGGLE_POPOVER: u8 = 0x01;
 
 const HEADER_LEN: usize = 9;
 const MAX_BATTERIES: usize = 8;
@@ -39,6 +44,21 @@ pub struct Report {
     pub layer: u8,
     pub layer_mask: u32,
     pub batteries: Vec<Option<u8>>,
+}
+
+/// A message from the keyboard.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Message {
+    State(Report),
+    /// The KeyLay key was pressed: open or close the cheat sheet
+    TogglePopover,
+}
+
+pub fn parse_message(buf: &[u8]) -> Option<Message> {
+    if buf.len() >= 4 && buf[0] == MAGIC && buf[1] != 0 && buf[2] == MSG_COMMAND {
+        return (buf[3] == CMD_TOGGLE_POPOVER).then_some(Message::TogglePopover);
+    }
+    parse(buf).map(Message::State)
 }
 
 /// Parses a state message. Fields may be appended in later protocol versions, so a newer
@@ -102,6 +122,15 @@ mod tests {
         assert_eq!(parse(&[0xFF, 1, 1, 0, 0, 0, 0, 0, 0]), None); // VIA "unhandled" echo
         assert_eq!(parse(&[0x4B, 1, 2, 0, 0, 0, 0, 0, 0]), None); // a request, not a state
         assert_eq!(parse(&[0x4B, 1, 1]), None);
+    }
+
+    #[test]
+    fn parses_the_keylay_key() {
+        let mut report = [0u8; 32];
+        report[..4].copy_from_slice(&[0x4B, 1, 3, 1]);
+        assert_eq!(parse_message(&report), Some(Message::TogglePopover));
+        assert_eq!(parse_message(&[0x4B, 1, 3, 9]), None); // a command this app does not know
+        assert!(matches!(parse_message(&[0x4B, 1, 1, 0, 1, 0, 0, 0, 0]), Some(Message::State(_))));
     }
 
     #[test]

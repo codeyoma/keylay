@@ -25,10 +25,25 @@ keymap-drawer SVG; the app uses that to name the layer.
 
 Later versions may append fields. The app ignores bytes it does not know.
 
+## Command message
+
+Sent by the KeyLay key (`KL_OPEN` in QMK, `&keylay` in ZMK) when it is pressed.
+
+| Offset | Size | Field |
+|---|---|---|
+| 0 | 1 | Magic `0x4B` |
+| 1 | 1 | Protocol version, `0x01` |
+| 2 | 1 | Message type, `0x03` = command |
+| 3 | 1 | `0x01` = open or close the cheat sheet |
+
+The app opens the cheat sheet on the keyboard that sent it, or closes it. Commands it does not
+know are ignored.
+
 ## USB raw HID (QMK)
 
 - Usage page `0xFF60`, usage `0x61` (QMK's default raw HID interface), 32-byte reports.
-- The keyboard sends a state report whenever the layer state changes.
+- The keyboard sends a state report whenever the layer state changes, and a command report
+  when the KeyLay key is pressed.
 - The app sends `4B 01 02` (magic, version, "get state") padded to 32 bytes when it opens
   the device; the keyboard answers with a state report.
 
@@ -37,7 +52,8 @@ Later versions may append fields. The app ignores bytes it does not know.
 - Service `9f3c0001-5b2e-4a6d-8f1c-3e7a2b9d4c60`
 - Characteristic `9f3c0002-5b2e-4a6d-8f1c-3e7a2b9d4c60`: read and notify, encrypted link
   required. It holds the state message. A notification is sent whenever the layer state or
-  a battery level changes, and right after the host subscribes.
+  a battery level changes, and right after the host subscribes. The KeyLay key sends a
+  command message as a notification on the same characteristic.
 
 Keyboards without the service still show their battery levels when they have the standard
 Battery Service (`0x180F`), as long as they are in the app's config.

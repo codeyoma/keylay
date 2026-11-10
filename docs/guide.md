@@ -65,6 +65,10 @@ Already added (not committed) to:
 - moNa2 (ZMK): `mona/src/keylay.c`, `CMakeLists.txt`, `Kconfig`. It runs on the right
   half (the central).
 
+The KeyLay key opens or closes the cheat sheet: `KL_OPEN` in QMK, `&keylay` in ZMK (a
+behavior from `src/keylay.c`, with its binding in `dts/bindings/behaviors/`). On these
+keyboards it is on the Adj layer, at the position of `/`.
+
 For another keyboard:
 
 - **QMK**: paste `firmware/qmk/keylay.c` into `keymap.c` and add `RAW_ENABLE = yes` to the

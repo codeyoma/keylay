@@ -13,19 +13,34 @@ static LAST_HIDDEN: Mutex<Option<Instant>> = Mutex::new(None);
 /// The tray icon the popover was last placed against, in physical pixels (x, y, w, h).
 static ANCHOR: Mutex<Option<(f64, f64, f64, f64)>> = Mutex::new(None);
 
+/// A click on the tray icon.
 pub fn toggle(app: &AppHandle, anchor: Option<Rect>) {
     let Some(window) = app.get_webview_window(LABEL) else { return };
     if window.is_visible().unwrap_or(false) {
-        hide(&window);
+        dismiss(app, &window);
         return;
     }
     if LAST_HIDDEN.lock().unwrap().is_some_and(|t| t.elapsed() < Duration::from_millis(300)) {
         return;
     }
-    show(app, anchor);
+    show(app, anchor, None);
 }
 
-pub fn show(app: &AppHandle, anchor: Option<Rect>) {
+/// The KeyLay key on a keyboard: opens the popover at the tray icon on that keyboard (its
+/// config name, or its device name), or closes it.
+pub fn toggle_for_keyboard(app: &AppHandle, keyboard: Option<String>) {
+    let Some(window) = app.get_webview_window(LABEL) else { return };
+    if window.is_visible().unwrap_or(false) {
+        dismiss(app, &window);
+        return;
+    }
+    let anchor = app.tray_by_id(crate::tray::TRAY_ID).and_then(|t| t.rect().ok().flatten());
+    show(app, anchor, keyboard);
+}
+
+/// Shows the popover, at the tray icon when its position is known. `keyboard` picks the
+/// keyboard to show; otherwise the popover follows the one whose layer changed last.
+pub fn show(app: &AppHandle, anchor: Option<Rect>, keyboard: Option<String>) {
     let Some(window) = app.get_webview_window(LABEL) else { return };
     if let Some(rect) = anchor {
         let scale = window.scale_factor().unwrap_or(1.0);
@@ -40,7 +55,7 @@ pub fn show(app: &AppHandle, anchor: Option<Rect>) {
     }
     let _ = window.show();
     let _ = window.set_focus();
-    let _ = app.emit_to(LABEL, "popover-shown", ());
+    let _ = app.emit_to(LABEL, "popover-shown", keyboard);
     // Opening the cheat sheet is when an outdated keymap matters; check unless just done
     app.state::<Arc<Hub>>().refresh_keymaps_if_older_than(Duration::from_secs(60));
 }
@@ -48,6 +63,16 @@ pub fn show(app: &AppHandle, anchor: Option<Rect>) {
 pub fn hide(window: &WebviewWindow) {
     let _ = window.hide();
     *LAST_HIDDEN.lock().unwrap() = Some(Instant::now());
+}
+
+/// Closes the popover on purpose (keyboard key, Esc, close button, tray click). On macOS the
+/// app is hidden too, so the app you were typing in gets the focus back.
+pub fn dismiss(app: &AppHandle, window: &WebviewWindow) {
+    hide(window);
+    #[cfg(target_os = "macos")]
+    let _ = app.hide();
+    #[cfg(not(target_os = "macos"))]
+    let _ = app;
 }
 
 /// Sets the popover height (logical pixels) to fit its content, keeping it at the tray icon.

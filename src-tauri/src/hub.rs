@@ -212,6 +212,22 @@ impl Hub {
         }
     }
 
+    /// The KeyLay key on a keyboard: opens the cheat sheet on that keyboard, or closes it.
+    pub fn toggle_popover(&self, id: &str) {
+        let key = {
+            let devices = self.devices.lock().unwrap();
+            let config = self.config.read().unwrap();
+            devices.get(id).map(|d| {
+                config.keyboard_for(&d.name, d.transport).map_or_else(|| d.name.clone(), |k| k.name.clone())
+            })
+        };
+        if std::env::var_os("KEYLAY_DEBUG").is_some() {
+            eprintln!("keylay: KeyLay key on {id} ({})", key.as_deref().unwrap_or("?"));
+        }
+        // Called from a reader thread; Tauri runs the window calls on the main thread itself
+        crate::popover::toggle_for_keyboard(&self.app, key);
+    }
+
     pub fn remove(&self, id: &str) {
         if self.devices.lock().unwrap().remove(id).is_some() {
             self.notify();

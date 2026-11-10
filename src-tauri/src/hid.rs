@@ -1,7 +1,7 @@
 //! USB: QMK keyboards with the KeyLay raw HID hook (`firmware/qmk`).
 
 use crate::hub::{Hub, Transport};
-use crate::protocol::{self, RAW_HID_USAGE, RAW_HID_USAGE_PAGE};
+use crate::protocol::{self, Message, RAW_HID_USAGE, RAW_HID_USAGE_PAGE};
 use hidapi::{HidApi, HidDevice};
 use std::collections::HashSet;
 use std::ffi::CString;
@@ -76,12 +76,14 @@ fn read(device: &HidDevice, path: &CString, name: &str, hub: &Hub) {
         }
         match device.read_timeout(&mut buf, 1000) {
             Ok(0) => {}
-            Ok(len) => {
-                if let Some(report) = protocol::parse(&buf[..len]) {
+            Ok(len) => match protocol::parse_message(&buf[..len]) {
+                Some(Message::State(report)) => {
                     answered = true;
                     hub.report(&id, name, Transport::Usb, report);
                 }
-            }
+                Some(Message::TogglePopover) => hub.toggle_popover(&id),
+                None => {}
+            },
             Err(_) => break,
         }
     }

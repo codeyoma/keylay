@@ -38,7 +38,7 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
         .menu(&menu)
         .show_menu_on_left_click(false)
         .on_menu_event(move |app, event| match event.id().as_ref() {
-            "show" => popover::show(app, None),
+            "show" => popover::show(app, None, None),
             "reload" => {
                 let hub = app.state::<Arc<Hub>>().inner().clone();
                 std::thread::spawn(move || hub.reload());

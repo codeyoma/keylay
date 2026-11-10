@@ -407,8 +407,10 @@ listen("snapshot", (e) => {
   state.snapshot = e.payload;
   render();
 });
-listen("popover-shown", () => {
-  state.userPicked = false;
+// The payload names the keyboard whose KeyLay key opened the popover, if any
+listen("popover-shown", (e) => {
+  state.userPicked = Boolean(e.payload);
+  if (e.payload) state.selected = e.payload;
   state.preview = null;
   state.shown = null; // scroll to the current layer again
   closeMenu();

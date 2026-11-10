@@ -5,7 +5,7 @@
 //! `connected_devices_with_services` and the app opens its own logical connection.
 
 use crate::hub::{Hub, Transport};
-use crate::protocol::{self, BLE_SERVICE, BLE_STATE_CHARACTERISTIC};
+use crate::protocol::{self, Message, BLE_SERVICE, BLE_STATE_CHARACTERISTIC};
 use bluest::btuuid::{characteristics::BATTERY_LEVEL, services::BATTERY};
 use bluest::{Adapter, Characteristic, Device, DeviceId};
 use futures_lite::StreamExt;
@@ -79,11 +79,11 @@ async fn follow_state(device: &Device, state: &Characteristic, id: &str, name: &
     loop {
         tokio::select! {
             update = updates.next() => match update {
-                Some(Ok(value)) => {
-                    if let Some(report) = protocol::parse(&value) {
-                        hub.report(id, name, Transport::Ble, report);
-                    }
-                }
+                Some(Ok(value)) => match protocol::parse_message(&value) {
+                    Some(Message::State(report)) => hub.report(id, name, Transport::Ble, report),
+                    Some(Message::TogglePopover) => hub.toggle_popover(id),
+                    None => {}
+                },
                 Some(Err(e)) => return Err(e.into()),
                 None => return Ok(()),
             },
