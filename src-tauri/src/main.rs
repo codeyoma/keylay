@@ -13,6 +13,7 @@ mod menubar;
 mod popover;
 mod protocol;
 mod settings;
+mod title;
 mod tray;
 
 use hub::{Hub, Snapshot};
@@ -60,6 +61,12 @@ fn open_settings(app: AppHandle) {
     settings::open(&app);
 }
 
+/// The menu bar title for a format, for the settings preview
+#[tauri::command]
+fn preview_title(hub: State<'_, Arc<Hub>>, format: String, layer_width: usize) -> String {
+    title::preview(&format, layer_width, hub.snapshot().devices.first())
+}
+
 #[tauri::command]
 fn get_snapshot(hub: State<'_, Arc<Hub>>) -> Snapshot {
     hub.snapshot()
@@ -101,6 +108,7 @@ fn main() {
         ))
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
+            preview_title,
             get_keymap_svg,
             reload,
             open_config,

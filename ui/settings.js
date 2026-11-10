@@ -337,33 +337,18 @@ $("remove").addEventListener("click", () => {
 
 // --- General tab --------------------------------------------------------------------------
 
-function fit(name, width) {
-  if (!width) return name;
-  const chars = [...name];
-  // No-break spaces, like the app: they keep their width and survive the cleanup below
-  return chars.length > width ? chars.slice(0, width - 1).join("") + "…" : name + "\u00a0".repeat(width - chars.length);
-}
-
-// The same rules as the tray title (src-tauri/src/tray.rs)
-function previewTitle() {
+// The title comes from the app, so the preview follows the same rules as the menu bar
+let titleRequest = 0;
+async function renderTitlePreview() {
   const c = state.config;
-  const d = state.snapshot?.devices[0];
-  const layer = d?.layerName ?? "Lower";
-  const lowest = d ? Math.min(...d.batteries.map((b) => b.level).filter((l) => l != null)) : 62;
-  const battery = Number.isFinite(lowest) ? `${String(lowest).padStart(3, "\u00a0")}%` : "";
-  const keyboard = d?.keyboard ?? d?.name ?? "Sweep";
-  return c.titleFormat
-    .replace("{keyboard}", keyboard)
-    .replace("{layer}", fit(layer, c.layerWidth))
-    .replace("{battery}", battery)
-    .split(" ")
-    .filter(Boolean)
-    .join(" ");
+  const request = ++titleRequest;
+  const title = await invoke("preview_title", { format: c.titleFormat, layerWidth: c.layerWidth });
+  if (request === titleRequest) $("mb-title").textContent = title;
 }
 
 function renderGeneral() {
   const c = state.config;
-  $("mb-title").textContent = previewTitle();
+  renderTitlePreview();
   $("mb-clock").textContent = new Date().toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).replace(",", "");
   setPressed($("g-format"), c.titleFormat);
   setValue($("g-format-custom"), c.titleFormat);
