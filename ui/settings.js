@@ -1,16 +1,5 @@
 // KeyLay settings window: edits config.json through the app (saved automatically).
 
-const { invoke } = window.__TAURI__.core;
-const { listen } = window.__TAURI__.event;
-
-const $ = (id) => document.getElementById(id);
-const LAYER_COLORS = ["#8A8F98", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#14B8A6"];
-const GITHUB_ICON =
-  '<svg class="icon" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>';
-const FILE_ICON =
-  '<svg class="icon" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
-const PLUS_ICON = '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
-
 const state = {
   config: null,
   snapshot: null,
@@ -40,31 +29,19 @@ function save() {
   }, 400);
 }
 
-// --- Devices ------------------------------------------------------------------------------
-
-function deviceForKeyboard(k) {
-  return state.snapshot?.devices.find((d) => d.keyboard === k.name) ?? null;
-}
-
-function deviceStatus(d) {
-  if (!d) return "Not connected";
-  const link = d.transport === "ble" ? "Bluetooth" : "USB";
-  return d.layerName ? `${link} · ${d.layerName}` : `${link} · battery only`;
-}
-
 // --- Keyboards tab ------------------------------------------------------------------------
 
 function renderList() {
   const keyboards = state.config.keyboards;
   $("kb-list").replaceChildren(
     ...keyboards.map((k, i) => {
-      const d = deviceForKeyboard(k);
+      const d = deviceFor(state.snapshot, k.name);
       const row = document.createElement("button");
       row.className = "kb";
       row.setAttribute("aria-selected", String(i === state.selected));
       row.innerHTML = `<span class="dot${d ? " on" : ""}"></span><span><span class="name"></span><span class="sub"></span></span>`;
       row.querySelector(".name").textContent = k.name || "Untitled";
-      row.querySelector(".sub").textContent = deviceStatus(d);
+      row.querySelector(".sub").textContent = (d?.status ?? "Not connected");
       row.addEventListener("click", () => {
         state.selected = i;
         renderKeyboards();
@@ -79,9 +56,9 @@ function renderList() {
     ...found.map((d) => {
       const row = document.createElement("button");
       row.className = "kb found";
-      row.innerHTML = `${PLUS_ICON}<span><span class="name"></span><span class="sub"></span></span>`;
+      row.innerHTML = `${icon("plus")}<span><span class="name"></span><span class="sub"></span></span>`;
       row.querySelector(".name").textContent = d.name;
-      row.querySelector(".sub").textContent = deviceStatus(d);
+      row.querySelector(".sub").textContent = (d?.status ?? "Not connected");
       row.addEventListener("click", () =>
         addKeyboard({ name: d.name, match: d.name, transport: d.transport }),
       );
@@ -112,7 +89,7 @@ function renderDetail() {
   $("empty").hidden = Boolean(k);
   if (!k) return;
 
-  const d = deviceForKeyboard(k);
+  const d = deviceFor(state.snapshot, k.name);
   $("d-title").textContent = k.name || "Untitled";
   const live = $("d-live");
   live.classList.toggle("on", Boolean(d));
@@ -122,7 +99,7 @@ function renderDetail() {
   setValue($("f-match"), k.match);
   setPressed($("f-transport"), k.transport ?? "");
   setValue($("f-keymap"), k.keymap);
-  $("f-keymap-icon").innerHTML = /github/.test(k.keymap) ? GITHUB_ICON : FILE_ICON;
+  $("f-keymap-icon").innerHTML = sourceIcon(k.keymap);
   renderKeymapStatus(k);
   renderLayers(k);
   renderBatteries(k, d);
@@ -187,7 +164,7 @@ function renderLayers(k) {
     const chip = document.createElement("button");
     chip.className = "chip" + (k.layerNames?.length && n !== fromSvg[i] ? " renamed" : "");
     chip.innerHTML = `<span class="swatch"></span><span class="n"></span>`;
-    chip.querySelector(".swatch").style.background = LAYER_COLORS[i % LAYER_COLORS.length];
+    chip.querySelector(".swatch").style.background = layerColor(state.snapshot, i);
     chip.querySelector(".n").textContent = n;
     chip.title = `Layer ${i}`;
     chip.addEventListener("click", () => renameLayer(chip, k, names, i));
@@ -307,7 +284,7 @@ let probeTimer = null;
 bindField("f-name", "name");
 bindField("f-match", "match");
 bindField("f-keymap", "keymap", (k) => {
-  $("f-keymap-icon").innerHTML = /github/.test(k.keymap) ? GITHUB_ICON : FILE_ICON;
+  $("f-keymap-icon").innerHTML = sourceIcon(k.keymap);
   clearTimeout(probeTimer);
   probeTimer = setTimeout(() => {
     probe(k.keymap.trim());

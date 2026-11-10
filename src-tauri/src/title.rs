@@ -54,6 +54,7 @@ pub fn preview(format: &str, layer_width: usize, device: Option<&DeviceView>) ->
         None => {
             sample = DeviceView {
                 id: String::new(),
+                key: "Sweep".into(),
                 name: "Sweep".into(),
                 transport: Transport::Ble,
                 keyboard: None,
@@ -61,6 +62,7 @@ pub fn preview(format: &str, layer_width: usize, device: Option<&DeviceView>) ->
                 layer_name: Some("Lower".into()),
                 layer_mask: 0b10,
                 batteries: vec![BatteryView { label: "Battery".into(), level: Some(62) }],
+                status: String::new(),
             };
             &sample
         }
@@ -76,6 +78,7 @@ mod tests {
     fn device(layer: Option<(&str, u8)>, batteries: &[Option<u8>]) -> DeviceView {
         DeviceView {
             id: "x".into(),
+            key: "Sweep".into(),
             name: "Sweep Dongle".into(),
             transport: Transport::Ble,
             keyboard: Some("Sweep".into()),
@@ -83,6 +86,7 @@ mod tests {
             layer_name: layer.map(|l| l.0.to_string()),
             layer_mask: 1,
             batteries: batteries.iter().map(|&level| BatteryView { label: "b".into(), level }).collect(),
+            status: String::new(),
         }
     }
 

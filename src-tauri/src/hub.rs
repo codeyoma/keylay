@@ -1,7 +1,7 @@
 //! Shared state: the connected keyboards, the config and the keymaps. Every change refreshes
 //! the tray and sends a `snapshot` event to the popover.
 
-use crate::config::Config;
+use crate::config::{Config, KeyboardConfig};
 use crate::keymap::{self, Keymap};
 use crate::protocol::Report;
 use crate::tray;
@@ -56,12 +56,16 @@ pub struct Snapshot {
     pub appearance: &'static str,
     /// The height the user gave the cheat sheet; "All" grows up to it
     pub popover_max_height: Option<f64>,
+    /// The layer colours, by layer index (repeating), shared with the tray badge
+    pub layer_colors: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeviceView {
     pub id: String,
+    /// What the windows call it: the config name, else the device name
+    pub key: String,
     pub name: String,
     pub transport: Transport,
     /// Name of the matching keyboard in the config, if any.
@@ -70,6 +74,8 @@ pub struct DeviceView {
     pub layer_name: Option<String>,
     pub layer_mask: u32,
     pub batteries: Vec<BatteryView>,
+    /// "Bluetooth · Lower", or "USB · battery only" for a keyboard without layer reports
+    pub status: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -96,7 +102,7 @@ pub struct KeyboardView {
 impl DeviceView {
     /// Name used in the tray: the config name, else the device name.
     pub fn display_name(&self) -> &str {
-        self.keyboard.as_deref().unwrap_or(&self.name)
+        &self.key
     }
 
     pub fn lowest_battery(&self) -> Option<u8> {
@@ -275,32 +281,7 @@ impl Hub {
             .map(|(id, d)| {
                 let keyboard = config.keyboard_for(&d.name, d.transport);
                 let layers = keyboard.and_then(|k| keymaps.get(&k.name)).map(|k| k.layers.as_slice());
-                let layer_name = d.layer.map(|l| {
-                    layers
-                        .and_then(|names| names.get(l as usize))
-                        .cloned()
-                        .unwrap_or_else(|| format!("Layer {l}"))
-                });
-                let labels = keyboard.map(|k| k.battery_labels.as_slice()).unwrap_or(&[]);
-                let batteries = d
-                    .batteries
-                    .iter()
-                    .enumerate()
-                    .map(|(i, &level)| BatteryView {
-                        label: labels.get(i).cloned().unwrap_or_else(|| default_battery_label(i, d.batteries.len())),
-                        level,
-                    })
-                    .collect();
-                DeviceView {
-                    id: id.clone(),
-                    name: d.name.clone(),
-                    transport: d.transport,
-                    keyboard: keyboard.map(|k| k.name.clone()),
-                    layer: d.layer,
-                    layer_name,
-                    layer_mask: d.layer_mask,
-                    batteries,
-                }
+                device_view(id, d, keyboard, layers)
             })
             .collect();
 
@@ -331,6 +312,10 @@ impl Hub {
             layer_width: config.layer_width,
             appearance: crate::appearance::effective(&config.appearance),
             popover_max_height: crate::popover::max_height(),
+            layer_colors: crate::icon::LAYER_COLORS
+                .iter()
+                .map(|[r, g, b, _]| format!("#{r:02X}{g:02X}{b:02X}"))
+                .collect(),
         }
     }
 
@@ -342,6 +327,48 @@ impl Hub {
         }
         tray::refresh(&self.app, &snapshot);
         let _ = self.app.emit("snapshot", &snapshot);
+    }
+}
+
+/// A connected keyboard as the tray and the windows show it: matched to its keyboard in the
+/// config, with layer and battery names.
+fn device_view(id: &str, d: &Device, keyboard: Option<&KeyboardConfig>, layers: Option<&[String]>) -> DeviceView {
+    let layer_name = d.layer.map(|l| {
+        layers
+            .and_then(|names| names.get(l as usize))
+            .cloned()
+            .unwrap_or_else(|| format!("Layer {l}"))
+    });
+    let labels = keyboard.map(|k| k.battery_labels.as_slice()).unwrap_or(&[]);
+    let batteries = d
+        .batteries
+        .iter()
+        .enumerate()
+        .map(|(i, &level)| BatteryView {
+            label: labels.get(i).cloned().unwrap_or_else(|| default_battery_label(i, d.batteries.len())),
+            level,
+        })
+        .collect();
+    let link = match d.transport {
+        Transport::Usb => "USB",
+        Transport::Ble => "Bluetooth",
+    };
+    let status = match &layer_name {
+        Some(layer) => format!("{link} · {layer}"),
+        None => format!("{link} · battery only"),
+    };
+    let keyboard = keyboard.map(|k| k.name.clone());
+    DeviceView {
+        id: id.to_string(),
+        key: keyboard.clone().unwrap_or_else(|| d.name.clone()),
+        name: d.name.clone(),
+        transport: d.transport,
+        keyboard,
+        layer: d.layer,
+        layer_name,
+        layer_mask: d.layer_mask,
+        batteries,
+        status,
     }
 }
 
@@ -381,5 +408,52 @@ fn migrate_old_config(config_path: &std::path::Path) {
         if let Err(e) = std::fs::copy(&old, config_path) {
             eprintln!("keylay: cannot copy {}: {e}", old.display());
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn device(name: &str, transport: Transport, layer: Option<u8>, batteries: &[Option<u8>]) -> Device {
+        Device { layer, batteries: batteries.to_vec(), ..new_device(name, transport) }
+    }
+
+    fn keyboard(name: &str, labels: &[&str]) -> KeyboardConfig {
+        KeyboardConfig {
+            name: name.into(),
+            battery_labels: labels.iter().map(|l| l.to_string()).collect(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn a_configured_keyboard_uses_its_names() {
+        let layers = ["Base".to_string(), "Lower".to_string()];
+        let d = device("Sweep Dongle", Transport::Ble, Some(1), &[Some(80), Some(40)]);
+        let view = device_view("a", &d, Some(&keyboard("Sweep", &["Left", "Right"])), Some(&layers));
+        assert_eq!(view.key, "Sweep");
+        assert_eq!(view.layer_name.as_deref(), Some("Lower"));
+        assert_eq!(view.status, "Bluetooth · Lower");
+        assert_eq!(view.batteries[1].label, "Right");
+        assert_eq!(view.lowest_battery(), Some(40));
+    }
+
+    #[test]
+    fn an_unknown_keyboard_falls_back_to_device_names() {
+        let d = device("Corne", Transport::Usb, Some(3), &[]);
+        let view = device_view("b", &d, None, None);
+        assert_eq!(view.key, "Corne");
+        assert_eq!(view.layer_name.as_deref(), Some("Layer 3"));
+        assert_eq!(view.status, "USB · Layer 3");
+    }
+
+    #[test]
+    fn a_keyboard_without_layer_reports_is_battery_only() {
+        let d = device("Keychron", Transport::Ble, None, &[Some(90), Some(70)]);
+        let view = device_view("c", &d, None, None);
+        assert_eq!(view.status, "Bluetooth · battery only");
+        assert_eq!(view.batteries[0].label, "Central");
+        assert_eq!(view.batteries[1].label, "Peripheral 1");
     }
 }
