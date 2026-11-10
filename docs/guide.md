@@ -24,7 +24,10 @@ Click the icon to open the cheat sheet:
   and scrolls to the active one. A keyboard that is not connected has no current layer, so it
   shows all layers with none highlighted.
 
-Pin it to keep it on top while you type in another app. Right-click the icon for the menu
+Pin it to keep it on top while you type in another app. Drag the cheat sheet anywhere and it
+keeps opening there (menu > Move Cheat Sheet Back to the Menu Bar undoes that); it also keeps
+the width you drag it to (in "All", also the height). Both are kept in `window.json` next to
+`config.json`. Right-click the icon for the menu
 (reload, config, launch at login, quit).
 
 The design is in `../design/keylay.pen` (pen.dev): name, app icon, menu bar glyph, Windows

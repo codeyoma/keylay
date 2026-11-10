@@ -55,6 +55,8 @@ pub struct Snapshot {
     pub layer_width: usize,
     /// "glass" or "solid", as the windows should look now
     pub appearance: &'static str,
+    /// The height the user gave the cheat sheet; "All" grows up to it
+    pub popover_max_height: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -129,7 +131,7 @@ impl Hub {
             keymaps: RwLock::new(HashMap::new()),
             keymap_check: Mutex::new(None),
             devices: Mutex::new(HashMap::new()),
-            pinned: AtomicBool::new(false),
+            pinned: AtomicBool::new(crate::window_state::get().pinned),
         }
     }
 
@@ -340,6 +342,7 @@ impl Hub {
             title_format: config.title_format.clone(),
             layer_width: config.layer_width,
             appearance: crate::appearance::effective(&config.appearance),
+            popover_max_height: crate::window_state::get().height,
         }
     }
 

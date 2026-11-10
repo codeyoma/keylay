@@ -7,8 +7,10 @@
   --ui: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
-  --surface: #ffffff6b; /* glass-surface */
-  --bg: #ffffff2e; /* glass-well: the key area, inputs */
+  /* One glass tint for every window (cheat sheet and settings): lower = more see-through */
+  --glass-tint: 20%;
+  --surface: color-mix(in srgb, #ffffff var(--glass-tint), transparent); /* glass-surface */
+  --bg: #ffffff1f; /* glass-well: the key area, inputs */
   --surface-2: #ffffff8c; /* glass-chip: switcher, toggles, chips */
   --key: #ffffffa6; /* glass-key */
   --key-line: #ffffffe6; /* glass-key-line */
@@ -32,8 +34,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface: #1a1c2452;
-    --bg: #0000001f;
+    --surface: color-mix(in srgb, #1a1c24 var(--glass-tint), transparent);
+    --bg: #0000001a;
     --surface-2: #ffffff14;
     --key: #ffffff12;
     --key-line: #ffffff24;

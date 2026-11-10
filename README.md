@@ -7,10 +7,11 @@ cheat sheet of every layer.
 ![KeyLay](docs/images/01-hero.jpg)
 
 <p>
-  <img src="docs/images/02-menu-bar.jpg" width="49%" alt="Same width on every layer" />
-  <img src="docs/images/03-cheat-sheet.jpg" width="49%" alt="Every key on this layer" />
-  <img src="docs/images/04-batteries.jpg" width="49%" alt="A battery gauge for every half" />
+  <img src="docs/images/02-menu-bar.jpg" width="49%" alt="Layer and batteries at a glance" />
+  <img src="docs/images/03-cheat-sheet.jpg" width="49%" alt="The keys of your layer, one click away" />
+  <img src="docs/images/04-batteries.jpg" width="49%" alt="Three batteries, one glance" />
   <img src="docs/images/05-firmware.jpg" width="49%" alt="Works with QMK and ZMK" />
+  <img src="docs/images/06-settings.jpg" width="49%" alt="Set it up in a window, not a JSON file" />
 </p>
 
 - **Menu bar**: the layer name, always 6 characters wide, and the lowest battery. On

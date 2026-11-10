@@ -14,6 +14,7 @@ mod popover;
 mod protocol;
 mod settings;
 mod tray;
+mod window_state;
 
 use hub::{Hub, Snapshot};
 use std::path::Path;
@@ -84,7 +85,9 @@ fn open_config(hub: State<'_, Arc<Hub>>) {
 }
 
 #[tauri::command]
-fn set_pinned(hub: State<'_, Arc<Hub>>, pinned: bool) {
+fn set_pinned(app: AppHandle, hub: State<'_, Arc<Hub>>, pinned: bool) {
+    let _ = app;
+    window_state::update(|s| s.pinned = pinned);
     hub.set_pinned(pinned);
 }
 
@@ -141,6 +144,7 @@ fn main() {
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
             let handle = app.handle().clone();
+            window_state::init(app.path().app_config_dir()?.join("window.json"));
             let config_path = app.path().app_config_dir()?.join("config.json");
             let cache_dir = app.path().app_cache_dir()?.join("keymaps");
             let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir));
@@ -199,6 +203,27 @@ fn main() {
                     if let Some(w) = window.app_handle().get_webview_window(popover::LABEL) {
                         popover::hide(&w);
                     }
+                }
+            }
+            // The user's own moves and resizes are remembered
+            WindowEvent::Moved(position) if window.label() == popover::LABEL => {
+                let scale = window.scale_factor().unwrap_or(1.0);
+                let point = position.to_logical::<f64>(scale);
+                if window_state::user_moved(point.x.round() as i32, point.y.round() as i32) {
+                    window_state::update(|s| {
+                        s.x = Some(point.x);
+                        s.y = Some(point.y);
+                    });
+                }
+            }
+            WindowEvent::Resized(size) if window.label() == popover::LABEL => {
+                if window.is_visible().unwrap_or(false) && window_state::user_resized(size.width, size.height) {
+                    let scale = window.scale_factor().unwrap_or(1.0);
+                    let size = size.to_logical::<f64>(scale);
+                    window_state::update(|s| {
+                        s.width = Some(size.width);
+                        s.height = Some(size.height);
+                    });
                 }
             }
             // Closing the popover only hides it; the app lives in the tray.

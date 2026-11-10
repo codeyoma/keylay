@@ -800,7 +800,7 @@
                   "id": "c8lQV4",
                   "name": "Note",
                   "fill": "$muted",
-                  "content": "Sweep: dongle, then left and right half, as bar height",
+                  "content": "Arc: dongle, then left and right half, as bar height",
                   "fontFamily": "$font-ui",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -834,7 +834,7 @@
                   "name": "Strip",
                   "descendants": {
                     "AZKS8": {
-                      "content": "yoma  ",
+                      "content": "Base  ",
                       "enabled": true
                     },
                     "OMHfV": {
@@ -1697,7 +1697,7 @@
                           "id": "BK4X2",
                           "name": "Keyboard",
                           "fill": "$text",
-                          "content": "Sweep",
+                          "content": "Arc",
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
                           "fontWeight": "600"
@@ -2037,7 +2037,7 @@
                         {
                           "type": "frame",
                           "id": "Uvcvw",
-                          "name": "Chip yoma",
+                          "name": "Chip Base",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -2069,7 +2069,7 @@
                               "id": "a7RduZ",
                               "name": "Chip Name",
                               "fill": "$glass-muted",
-                              "content": "yoma",
+                              "content": "Base",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -2079,7 +2079,7 @@
                         {
                           "type": "frame",
                           "id": "T1aWi",
-                          "name": "Chip ARST",
+                          "name": "Chip Game",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -2111,7 +2111,7 @@
                               "id": "HsUjO",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "ARST",
+                              "content": "Game",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -2289,7 +2289,7 @@
                         {
                           "type": "frame",
                           "id": "RkdEN",
-                          "name": "Chip Test",
+                          "name": "Chip Num",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -2321,7 +2321,7 @@
                               "id": "t8nao",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Test",
+                              "content": "Num",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -2331,7 +2331,7 @@
                         {
                           "type": "frame",
                           "id": "FQ05L",
-                          "name": "Chip Snipe",
+                          "name": "Chip Sym",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -2363,7 +2363,7 @@
                               "id": "NHeRz",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Snipe",
+                              "content": "Sym",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -2373,7 +2373,7 @@
                         {
                           "type": "frame",
                           "id": "alFfg",
-                          "name": "Chip Scroll",
+                          "name": "Chip Fn",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -2405,7 +2405,7 @@
                               "id": "x1OsiI",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Scroll",
+                              "content": "Fn",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -3222,7 +3222,7 @@
                           "id": "R3TiX",
                           "name": "Keyboard",
                           "fill": "$text",
-                          "content": "Sweep",
+                          "content": "Arc",
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
                           "fontWeight": "600"
@@ -3562,7 +3562,7 @@
                         {
                           "type": "frame",
                           "id": "mlQLC",
-                          "name": "Chip yoma",
+                          "name": "Chip Base",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -3594,7 +3594,7 @@
                               "id": "V07Is",
                               "name": "Chip Name",
                               "fill": "$glass-muted",
-                              "content": "yoma",
+                              "content": "Base",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -3604,7 +3604,7 @@
                         {
                           "type": "frame",
                           "id": "DUJWK",
-                          "name": "Chip ARST",
+                          "name": "Chip Game",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -3636,7 +3636,7 @@
                               "id": "BDjmG",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "ARST",
+                              "content": "Game",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -3814,7 +3814,7 @@
                         {
                           "type": "frame",
                           "id": "IZcQ7",
-                          "name": "Chip Test",
+                          "name": "Chip Num",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -3846,7 +3846,7 @@
                               "id": "YajB8",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Test",
+                              "content": "Num",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -3856,7 +3856,7 @@
                         {
                           "type": "frame",
                           "id": "ulBed",
-                          "name": "Chip Snipe",
+                          "name": "Chip Sym",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -3888,7 +3888,7 @@
                               "id": "XsvA3",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Snipe",
+                              "content": "Sym",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -3898,7 +3898,7 @@
                         {
                           "type": "frame",
                           "id": "Jl1hL",
-                          "name": "Chip Scroll",
+                          "name": "Chip Fn",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -3930,7 +3930,7 @@
                               "id": "BhlJw",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Scroll",
+                              "content": "Fn",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -4744,7 +4744,7 @@
                           "id": "ysCqs",
                           "name": "Keyboard",
                           "fill": "$text",
-                          "content": "Charybdis ZMK",
+                          "content": "Atlas ZMK",
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
                           "fontWeight": "600"
@@ -4917,7 +4917,7 @@
                         {
                           "type": "frame",
                           "id": "KhY28",
-                          "name": "Chip yoma",
+                          "name": "Chip Base",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -4949,7 +4949,7 @@
                               "id": "RGF3f",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "yoma",
+                              "content": "Base",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -4959,7 +4959,7 @@
                         {
                           "type": "frame",
                           "id": "u1pHMT",
-                          "name": "Chip ARST",
+                          "name": "Chip Game",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -4991,7 +4991,7 @@
                               "id": "V0lR7",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "ARST",
+                              "content": "Game",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -5169,7 +5169,7 @@
                         {
                           "type": "frame",
                           "id": "Xw5s3",
-                          "name": "Chip Test",
+                          "name": "Chip Num",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -5201,7 +5201,7 @@
                               "id": "por85",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Test",
+                              "content": "Num",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -5211,7 +5211,7 @@
                         {
                           "type": "frame",
                           "id": "JwaAH",
-                          "name": "Chip Snipe",
+                          "name": "Chip Sym",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -5243,7 +5243,7 @@
                               "id": "FUhnq",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Snipe",
+                              "content": "Sym",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -5253,7 +5253,7 @@
                         {
                           "type": "frame",
                           "id": "oBLNa",
-                          "name": "Chip Scroll",
+                          "name": "Chip Fn",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 12,
@@ -5285,7 +5285,7 @@
                               "id": "gQhj4",
                               "name": "Chip Name",
                               "fill": "$glass-faint",
-                              "content": "Scroll",
+                              "content": "Fn",
                               "fontFamily": "$font-ui",
                               "fontSize": 10.5,
                               "fontWeight": "normal"
@@ -5334,7 +5334,7 @@
                           "id": "cSI7c",
                           "name": "Heading",
                           "fill": "$glass-muted",
-                          "content": "0  yoma",
+                          "content": "0  Base",
                           "fontFamily": "$font-mono",
                           "fontSize": 11,
                           "fontWeight": "normal"
@@ -6668,7 +6668,7 @@
                       "id": "qCSKW",
                       "name": "Keyboard",
                       "fill": "$text",
-                      "content": "Sweep",
+                      "content": "Arc",
                       "fontFamily": "$font-ui",
                       "fontSize": 22.75,
                       "fontWeight": "600"
@@ -7008,7 +7008,7 @@
                     {
                       "type": "frame",
                       "id": "nsHPM",
-                      "name": "Chip yoma",
+                      "name": "Chip Base",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -7040,7 +7040,7 @@
                           "id": "ZzSdn",
                           "name": "Chip Name",
                           "fill": "#FFFFFFB3",
-                          "content": "yoma",
+                          "content": "Base",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -7050,7 +7050,7 @@
                     {
                       "type": "frame",
                       "id": "frkhM",
-                      "name": "Chip ARST",
+                      "name": "Chip Game",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -7082,7 +7082,7 @@
                           "id": "Pd6BS",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "ARST",
+                          "content": "Game",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -7260,7 +7260,7 @@
                     {
                       "type": "frame",
                       "id": "PKZP9",
-                      "name": "Chip Test",
+                      "name": "Chip Num",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -7292,7 +7292,7 @@
                           "id": "E58pzX",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Test",
+                          "content": "Num",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -7302,7 +7302,7 @@
                     {
                       "type": "frame",
                       "id": "x6mpk",
-                      "name": "Chip Snipe",
+                      "name": "Chip Sym",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -7334,7 +7334,7 @@
                           "id": "G0ETRX",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Snipe",
+                          "content": "Sym",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -7344,7 +7344,7 @@
                     {
                       "type": "frame",
                       "id": "fbjkD",
-                      "name": "Chip Scroll",
+                      "name": "Chip Fn",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -7376,7 +7376,7 @@
                           "id": "NCxg8",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Scroll",
+                          "content": "Fn",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -10230,7 +10230,7 @@
                       "id": "PdOVs",
                       "name": "Keyboard",
                       "fill": "$text",
-                      "content": "Sweep",
+                      "content": "Arc",
                       "fontFamily": "$font-ui",
                       "fontSize": 22.75,
                       "fontWeight": "600"
@@ -10570,7 +10570,7 @@
                     {
                       "type": "frame",
                       "id": "LeONN",
-                      "name": "Chip yoma",
+                      "name": "Chip Base",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -10602,7 +10602,7 @@
                           "id": "B8mfu",
                           "name": "Chip Name",
                           "fill": "$muted",
-                          "content": "yoma",
+                          "content": "Base",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -10612,7 +10612,7 @@
                     {
                       "type": "frame",
                       "id": "x0JTeM",
-                      "name": "Chip ARST",
+                      "name": "Chip Game",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -10644,7 +10644,7 @@
                           "id": "WjfK8",
                           "name": "Chip Name",
                           "fill": "#15161A66",
-                          "content": "ARST",
+                          "content": "Game",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -10822,7 +10822,7 @@
                     {
                       "type": "frame",
                       "id": "cLB2I",
-                      "name": "Chip Test",
+                      "name": "Chip Num",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -10854,7 +10854,7 @@
                           "id": "CCAe7",
                           "name": "Chip Name",
                           "fill": "#15161A66",
-                          "content": "Test",
+                          "content": "Num",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -10864,7 +10864,7 @@
                     {
                       "type": "frame",
                       "id": "lIuB5",
-                      "name": "Chip Snipe",
+                      "name": "Chip Sym",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -10896,7 +10896,7 @@
                           "id": "Sp359",
                           "name": "Chip Name",
                           "fill": "#15161A66",
-                          "content": "Snipe",
+                          "content": "Sym",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -10906,7 +10906,7 @@
                     {
                       "type": "frame",
                       "id": "NCJMy",
-                      "name": "Chip Scroll",
+                      "name": "Chip Fn",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 20,
@@ -10938,7 +10938,7 @@
                           "id": "xyrsM",
                           "name": "Chip Name",
                           "fill": "#15161A66",
-                          "content": "Scroll",
+                          "content": "Fn",
                           "fontFamily": "$font-ui",
                           "fontSize": 18.38,
                           "fontWeight": "normal"
@@ -12752,7 +12752,7 @@
                     {
                       "type": "frame",
                       "id": "lAlFM",
-                      "name": "Chip yoma",
+                      "name": "Chip Base",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 30,
@@ -12784,7 +12784,7 @@
                           "id": "TLrxF",
                           "name": "Chip Name",
                           "fill": "#FFFFFFB3",
-                          "content": "yoma",
+                          "content": "Base",
                           "fontFamily": "$font-ui",
                           "fontSize": 27.3,
                           "fontWeight": "normal"
@@ -12794,7 +12794,7 @@
                     {
                       "type": "frame",
                       "id": "qo9EZ",
-                      "name": "Chip ARST",
+                      "name": "Chip Game",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 30,
@@ -12826,7 +12826,7 @@
                           "id": "o92M6F",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "ARST",
+                          "content": "Game",
                           "fontFamily": "$font-ui",
                           "fontSize": 27.3,
                           "fontWeight": "normal"
@@ -13004,7 +13004,7 @@
                     {
                       "type": "frame",
                       "id": "HgHfm",
-                      "name": "Chip Test",
+                      "name": "Chip Num",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 30,
@@ -13036,7 +13036,7 @@
                           "id": "UCqW6",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Test",
+                          "content": "Num",
                           "fontFamily": "$font-ui",
                           "fontSize": 27.3,
                           "fontWeight": "normal"
@@ -13046,7 +13046,7 @@
                     {
                       "type": "frame",
                       "id": "Ostp9",
-                      "name": "Chip Snipe",
+                      "name": "Chip Sym",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 30,
@@ -13078,7 +13078,7 @@
                           "id": "Denwu",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Snipe",
+                          "content": "Sym",
                           "fontFamily": "$font-ui",
                           "fontSize": 27.3,
                           "fontWeight": "normal"
@@ -13088,7 +13088,7 @@
                     {
                       "type": "frame",
                       "id": "yLq6Y",
-                      "name": "Chip Scroll",
+                      "name": "Chip Fn",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 30,
@@ -13120,7 +13120,7 @@
                           "id": "V1jmFE",
                           "name": "Chip Name",
                           "fill": "#FFFFFF73",
-                          "content": "Scroll",
+                          "content": "Fn",
                           "fontFamily": "$font-ui",
                           "fontSize": 27.3,
                           "fontWeight": "normal"
@@ -14629,7 +14629,7 @@
                         {
                           "type": "frame",
                           "id": "e0dv99",
-                          "name": "Row Sweep",
+                          "name": "Row Arc",
                           "width": "fill_container",
                           "fill": "$glass-chip",
                           "cornerRadius": 7,
@@ -14660,7 +14660,7 @@
                                   "id": "E4rBNl",
                                   "name": "Name",
                                   "fill": "$text",
-                                  "content": "Sweep",
+                                  "content": "Arc",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "600"
@@ -14682,7 +14682,7 @@
                         {
                           "type": "frame",
                           "id": "EGPo9",
-                          "name": "Row moNa2",
+                          "name": "Row Nova",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 7,
@@ -14713,7 +14713,7 @@
                                   "id": "ecN9M",
                                   "name": "Name",
                                   "fill": "$text",
-                                  "content": "moNa2",
+                                  "content": "Nova",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -14735,7 +14735,7 @@
                         {
                           "type": "frame",
                           "id": "R8Ha5P",
-                          "name": "Row Charybdis QMK",
+                          "name": "Row Atlas QMK",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 7,
@@ -14766,7 +14766,7 @@
                                   "id": "iPTRo",
                                   "name": "Name",
                                   "fill": "$text",
-                                  "content": "Charybdis QMK",
+                                  "content": "Atlas QMK",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -14788,7 +14788,7 @@
                         {
                           "type": "frame",
                           "id": "GDcnS",
-                          "name": "Row Charybdis ZMK",
+                          "name": "Row Atlas ZMK",
                           "width": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 7,
@@ -14819,7 +14819,7 @@
                                   "id": "G9aKcR",
                                   "name": "Name",
                                   "fill": "$text",
-                                  "content": "Charybdis ZMK",
+                                  "content": "Atlas ZMK",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -14893,7 +14893,7 @@
                                   "id": "V5j6On",
                                   "name": "Name",
                                   "fill": "$text",
-                                  "content": "Corne",
+                                  "content": "Orbit",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -14980,7 +14980,7 @@
                               "id": "p9RBH",
                               "name": "Title",
                               "fill": "$text",
-                              "content": "Sweep",
+                              "content": "Arc",
                               "fontFamily": "$font-ui",
                               "fontSize": 20,
                               "fontWeight": "650"
@@ -15018,7 +15018,7 @@
                                   "id": "S2IVdb",
                                   "name": "L",
                                   "fill": "$good",
-                                  "content": "Connected as “Sweep Dongle”",
+                                  "content": "Connected as “Arc Dongle”",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 11,
                                   "fontWeight": "normal"
@@ -15076,7 +15076,7 @@
                                       "fill": "$text",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Sweep",
+                                      "content": "Arc",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15127,7 +15127,7 @@
                                       "fill": "$text",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Sweep",
+                                      "content": "Arc",
                                       "fontFamily": "$font-mono",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15299,7 +15299,7 @@
                                   "fill": "$text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "https://raw.githubusercontent.com/codeyoma/keyboard-zmk-sweep/main/sweep_keymap.svg",
+                                  "content": "https://raw.githubusercontent.com/example/zmk-config/main/keymap.svg",
                                   "fontFamily": "$font-mono",
                                   "fontSize": 12,
                                   "fontWeight": "normal"
@@ -15377,7 +15377,7 @@
                                 {
                                   "type": "frame",
                                   "id": "keQHa",
-                                  "name": "Chip yoma",
+                                  "name": "Chip Base",
                                   "fill": "$glass-chip",
                                   "cornerRadius": 6,
                                   "gap": 6,
@@ -15400,7 +15400,7 @@
                                       "id": "QfU5v",
                                       "name": "L",
                                       "fill": "$text",
-                                      "content": "yoma",
+                                      "content": "Base",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15410,7 +15410,7 @@
                                 {
                                   "type": "frame",
                                   "id": "fEm7m",
-                                  "name": "Chip ARST",
+                                  "name": "Chip Game",
                                   "fill": "$glass-chip",
                                   "cornerRadius": 6,
                                   "gap": 6,
@@ -15433,7 +15433,7 @@
                                       "id": "y9Gtg",
                                       "name": "L",
                                       "fill": "$text",
-                                      "content": "ARST",
+                                      "content": "Game",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15575,7 +15575,7 @@
                                 {
                                   "type": "frame",
                                   "id": "qpBZd",
-                                  "name": "Chip Test",
+                                  "name": "Chip Num",
                                   "fill": "$glass-chip",
                                   "cornerRadius": 6,
                                   "gap": 6,
@@ -15598,7 +15598,7 @@
                                       "id": "oVWJT",
                                       "name": "L",
                                       "fill": "$text",
-                                      "content": "Test",
+                                      "content": "Num",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15608,7 +15608,7 @@
                                 {
                                   "type": "frame",
                                   "id": "Gx07b",
-                                  "name": "Chip Snipe",
+                                  "name": "Chip Sym",
                                   "fill": "$glass-chip",
                                   "cornerRadius": 6,
                                   "gap": 6,
@@ -15631,7 +15631,7 @@
                                       "id": "HNiCf",
                                       "name": "L",
                                       "fill": "$text",
-                                      "content": "Snipe",
+                                      "content": "Sym",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -15641,7 +15641,7 @@
                                 {
                                   "type": "frame",
                                   "id": "aJuJ8",
-                                  "name": "Chip Scroll",
+                                  "name": "Chip Fn",
                                   "fill": "$glass-chip",
                                   "cornerRadius": 6,
                                   "gap": 6,
@@ -15664,7 +15664,7 @@
                                       "id": "p9BYZ4",
                                       "name": "L",
                                       "fill": "$text",
-                                      "content": "Scroll",
+                                      "content": "Fn",
                                       "fontFamily": "$font-ui",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -17675,7 +17675,7 @@
                     {
                       "type": "frame",
                       "id": "yLqft",
-                      "name": "Row Sweep",
+                      "name": "Row Arc",
                       "width": "fill_container",
                       "fill": "$glass-chip",
                       "cornerRadius": 6.3,
@@ -17706,7 +17706,7 @@
                               "id": "P1VrX",
                               "name": "Name",
                               "fill": "$text",
-                              "content": "Sweep",
+                              "content": "Arc",
                               "fontFamily": "$font-ui",
                               "fontSize": 11.7,
                               "fontWeight": "600"
@@ -17728,7 +17728,7 @@
                     {
                       "type": "frame",
                       "id": "DLUFI",
-                      "name": "Row moNa2",
+                      "name": "Row Nova",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 6.3,
@@ -17759,7 +17759,7 @@
                               "id": "V8di4b",
                               "name": "Name",
                               "fill": "$text",
-                              "content": "moNa2",
+                              "content": "Nova",
                               "fontFamily": "$font-ui",
                               "fontSize": 11.7,
                               "fontWeight": "500"
@@ -17781,7 +17781,7 @@
                     {
                       "type": "frame",
                       "id": "E2t03",
-                      "name": "Row Charybdis QMK",
+                      "name": "Row Atlas QMK",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 6.3,
@@ -17812,7 +17812,7 @@
                               "id": "Wa6uL",
                               "name": "Name",
                               "fill": "$text",
-                              "content": "Charybdis QMK",
+                              "content": "Atlas QMK",
                               "fontFamily": "$font-ui",
                               "fontSize": 11.7,
                               "fontWeight": "500"
@@ -17834,7 +17834,7 @@
                     {
                       "type": "frame",
                       "id": "j4Pr5a",
-                      "name": "Row Charybdis ZMK",
+                      "name": "Row Atlas ZMK",
                       "width": "fill_container",
                       "fill": "#00000000",
                       "cornerRadius": 6.3,
@@ -17865,7 +17865,7 @@
                               "id": "D8aYtZ",
                               "name": "Name",
                               "fill": "$text",
-                              "content": "Charybdis ZMK",
+                              "content": "Atlas ZMK",
                               "fontFamily": "$font-ui",
                               "fontSize": 11.7,
                               "fontWeight": "500"
@@ -17939,7 +17939,7 @@
                               "id": "NSCBA",
                               "name": "Name",
                               "fill": "$text",
-                              "content": "Corne",
+                              "content": "Orbit",
                               "fontFamily": "$font-ui",
                               "fontSize": 11.7,
                               "fontWeight": "500"
@@ -18026,7 +18026,7 @@
                           "id": "ldoZS",
                           "name": "Title",
                           "fill": "$text",
-                          "content": "Sweep",
+                          "content": "Arc",
                           "fontFamily": "$font-ui",
                           "fontSize": 18,
                           "fontWeight": "650"
@@ -18064,7 +18064,7 @@
                               "id": "gtSYP",
                               "name": "L",
                               "fill": "$good",
-                              "content": "Connected as “Sweep Dongle”",
+                              "content": "Connected as “Arc Dongle”",
                               "fontFamily": "$font-ui",
                               "fontSize": 9.9,
                               "fontWeight": "normal"
@@ -18122,7 +18122,7 @@
                                   "fill": "$text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Sweep",
+                                  "content": "Arc",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18173,7 +18173,7 @@
                                   "fill": "$text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Sweep",
+                                  "content": "Arc",
                                   "fontFamily": "$font-mono",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18347,7 +18347,7 @@
                               "fill": "$text",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "https://raw.githubusercontent.com/codeyoma/keyboard-zmk-sweep/main/sweep_keymap.svg",
+                              "content": "https://raw.githubusercontent.com/example/zmk-config/main/keymap.svg",
                               "fontFamily": "$font-mono",
                               "fontSize": 10.8,
                               "fontWeight": "normal"
@@ -18425,7 +18425,7 @@
                             {
                               "type": "frame",
                               "id": "lSiM5",
-                              "name": "Chip yoma",
+                              "name": "Chip Base",
                               "fill": "$glass-chip",
                               "cornerRadius": 5.4,
                               "gap": 5.4,
@@ -18448,7 +18448,7 @@
                                   "id": "T9nWx",
                                   "name": "L",
                                   "fill": "$text",
-                                  "content": "yoma",
+                                  "content": "Base",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18458,7 +18458,7 @@
                             {
                               "type": "frame",
                               "id": "usg5b",
-                              "name": "Chip ARST",
+                              "name": "Chip Game",
                               "fill": "$glass-chip",
                               "cornerRadius": 5.4,
                               "gap": 5.4,
@@ -18481,7 +18481,7 @@
                                   "id": "zoEDs",
                                   "name": "L",
                                   "fill": "$text",
-                                  "content": "ARST",
+                                  "content": "Game",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18623,7 +18623,7 @@
                             {
                               "type": "frame",
                               "id": "NDRxR",
-                              "name": "Chip Test",
+                              "name": "Chip Num",
                               "fill": "$glass-chip",
                               "cornerRadius": 5.4,
                               "gap": 5.4,
@@ -18646,7 +18646,7 @@
                                   "id": "CZNLc",
                                   "name": "L",
                                   "fill": "$text",
-                                  "content": "Test",
+                                  "content": "Num",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18656,7 +18656,7 @@
                             {
                               "type": "frame",
                               "id": "eu2KS",
-                              "name": "Chip Snipe",
+                              "name": "Chip Sym",
                               "fill": "$glass-chip",
                               "cornerRadius": 5.4,
                               "gap": 5.4,
@@ -18679,7 +18679,7 @@
                                   "id": "wBH6z",
                                   "name": "L",
                                   "fill": "$text",
-                                  "content": "Snipe",
+                                  "content": "Sym",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"
@@ -18689,7 +18689,7 @@
                             {
                               "type": "frame",
                               "id": "B4hCi",
-                              "name": "Chip Scroll",
+                              "name": "Chip Fn",
                               "fill": "$glass-chip",
                               "cornerRadius": 5.4,
                               "gap": 5.4,
@@ -18712,7 +18712,7 @@
                                   "id": "HiUf2",
                                   "name": "L",
                                   "fill": "$text",
-                                  "content": "Scroll",
+                                  "content": "Fn",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 10.8,
                                   "fontWeight": "normal"

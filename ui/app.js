@@ -349,7 +349,8 @@ function fit(mode = state.mode) {
       content += el.getBoundingClientRect().height + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
     }
     const natural = Math.ceil(chrome + content) + 2; // + the panel border
-    const height = mode === "current" ? natural : Math.min(natural, 640);
+    // "All" grows up to the height the user last gave the window (640 px before that)
+    const height = mode === "current" ? natural : Math.min(natural, state.snapshot?.popoverMaxHeight ?? 640);
     invoke("fit_popover", { height });
   });
 }

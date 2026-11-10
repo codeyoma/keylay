@@ -36,7 +36,8 @@ pub fn material(mode: &str) -> Option<tauri::utils::config::WindowEffectsConfig>
         return None;
     }
     #[cfg(target_os = "macos")]
-    let effect = Effect::Popover;
+    // The most see-through system material; both windows use the same one
+    let effect = Effect::FullScreenUI;
     #[cfg(target_os = "windows")]
     let effect = Effect::Acrylic;
     #[cfg(not(any(target_os = "macos", target_os = "windows")))]

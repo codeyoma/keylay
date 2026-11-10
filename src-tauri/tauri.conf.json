@@ -27,7 +27,7 @@
         "transparent": true,
         "windowEffects": {
           "effects": [
-            "popover",
+            "fullScreenUI",
             "acrylic"
           ],
           "state": "active",

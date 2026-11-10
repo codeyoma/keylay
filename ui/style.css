@@ -191,10 +191,7 @@ button:focus-visible {
   color: var(--text);
 }
 
-#pin[aria-pressed="true"] {
-  color: var(--layer);
-}
-
+/* Pinned or not shows only as a filled or an outlined pin, in the same color */
 #pin[aria-pressed="true"] .icon {
   fill: currentColor;
 }
