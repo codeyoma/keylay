@@ -129,7 +129,7 @@ function renderHero(device, keyboard, entry) {
     bar.classList.add("off");
     name.classList.add("off");
     name.textContent = "No current layer";
-    detail.textContent = "Not connected · showing all layers";
+    detail.textContent = "Not connected · pick a layer below";
   }
 
   $("batteries").replaceChildren(
@@ -158,7 +158,7 @@ function renderChips(device, keyboard) {
       chip.style.setProperty("--chip", layerColor(state.snapshot, i));
       if (i === live) chip.classList.add("active");
       else if (device && device.layerMask & (1 << i)) chip.classList.add("on");
-      if (i === state.preview) chip.classList.add("preview");
+      if (i === state.preview || (live == null && i === shownLayer(live))) chip.classList.add("preview");
       chip.addEventListener("click", () => {
         state.preview = state.preview === i || i === live ? null : i;
         render();
@@ -286,18 +286,23 @@ function translation(el) {
 
 // live: the keyboard's active layer, or null when it is not connected. A keyboard that is not
 // connected has no current layer, so it shows every layer with none highlighted.
+// The layer "Current" shows: the one clicked in the layer row, else the keyboard's, else (not
+// connected, or no layer reports) the first. "All" scrolls to it, or stays at the top.
+function shownLayer(live) {
+  return state.preview ?? live ?? (state.mode === "current" ? 0 : null);
+}
+
 function showLayer(live) {
   const connected = live != null;
-  const mode = connected ? state.mode : "all";
+  const mode = state.mode;
   document.body.dataset.mode = mode;
   for (const button of document.querySelectorAll(".toggle button")) {
     button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
-    button.disabled = !connected;
   }
   const { svg, groups, labels } = state;
   if (!svg || groups.length === 0) return fit(mode);
 
-  const target = state.preview ?? live; // the layer to show or scroll to
+  const target = shownLayer(live); // the layer to show or scroll to
   const index = target == null ? -1 : Math.min(target, groups.length - 1);
   const current = mode === "current";
   groups.forEach((g, i) => {
