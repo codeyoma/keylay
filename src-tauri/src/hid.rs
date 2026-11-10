@@ -1,7 +1,8 @@
 //! USB: QMK keyboards with the KeyLay raw HID hook (`firmware/qmk`).
 
 use crate::hub::{Hub, Transport};
-use crate::protocol::{self, Message, RAW_HID_USAGE, RAW_HID_USAGE_PAGE};
+use crate::intake::{Connection, Sink};
+use crate::protocol::{self, RAW_HID_USAGE, RAW_HID_USAGE_PAGE};
 use hidapi::{HidApi, HidDevice};
 use std::collections::HashSet;
 use std::ffi::CString;
@@ -47,9 +48,13 @@ fn scan(hub: Arc<Hub>) {
                 match api.open_path(&path) {
                     Ok(device) => {
                         open.lock().unwrap().insert(path.clone());
-                        let (hub, open) = (hub.clone(), open.clone());
+                        let id = format!("usb:{}", path.to_string_lossy());
+                        let sink: Arc<dyn Sink> = hub.clone();
+                        let connection = Connection::open(sink, id, name, Transport::Usb);
+                        let open = open.clone();
                         std::thread::spawn(move || {
-                            read(&device, &path, &name, &hub);
+                            read(&device, &connection);
+                            drop(connection);
                             open.lock().unwrap().remove(&path);
                         });
                     }
@@ -62,8 +67,7 @@ fn scan(hub: Arc<Hub>) {
 }
 
 /// Reads state reports until the device goes away.
-fn read(device: &HidDevice, path: &CString, name: &str, hub: &Hub) {
-    let id = format!("usb:{}", path.to_string_lossy());
+fn read(device: &HidDevice, connection: &Connection) {
     let mut buf = [0u8; 64];
     let mut answered = false;
     let mut last_query: Option<Instant> = None;
@@ -76,16 +80,8 @@ fn read(device: &HidDevice, path: &CString, name: &str, hub: &Hub) {
         }
         match device.read_timeout(&mut buf, 1000) {
             Ok(0) => {}
-            Ok(len) => match protocol::parse_message(&buf[..len]) {
-                Some(Message::State(report)) => {
-                    answered = true;
-                    hub.report(&id, name, Transport::Usb, report);
-                }
-                Some(Message::TogglePopover) => hub.toggle_popover(&id),
-                None => {}
-            },
+            Ok(len) => answered |= connection.bytes(&buf[..len]),
             Err(_) => break,
         }
     }
-    hub.remove(&id);
 }

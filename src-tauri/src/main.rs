@@ -7,6 +7,7 @@ mod config;
 mod hid;
 mod hub;
 mod icon;
+mod intake;
 mod keymap;
 #[cfg(target_os = "macos")]
 mod menubar;

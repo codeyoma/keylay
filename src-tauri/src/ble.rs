@@ -5,7 +5,8 @@
 //! `connected_devices_with_services` and the app opens its own logical connection.
 
 use crate::hub::{Hub, Transport};
-use crate::protocol::{self, Message, BLE_SERVICE, BLE_STATE_CHARACTERISTIC};
+use crate::intake::{Connection, Sink};
+use crate::protocol::{BLE_SERVICE, BLE_STATE_CHARACTERISTIC};
 use bluest::btuuid::{characteristics::BATTERY_LEVEL, services::BATTERY};
 use bluest::{Adapter, Characteristic, Device, DeviceId};
 use futures_lite::StreamExt;
@@ -45,7 +46,6 @@ async fn scan(hub: Arc<Hub>) -> Result<()> {
                 if let Err(e) = watch(&adapter, &device, &id, &hub).await {
                     eprintln!("keylay: {id}: {e}");
                 }
-                hub.remove(&id);
                 watched.lock().unwrap().remove(&device.id());
             });
         }
@@ -54,12 +54,16 @@ async fn scan(hub: Arc<Hub>) -> Result<()> {
 }
 
 /// Follows one device until it disconnects.
-async fn watch(adapter: &Adapter, device: &Device, id: &str, hub: &Hub) -> Result<()> {
+async fn watch(adapter: &Adapter, device: &Device, id: &str, hub: &Arc<Hub>) -> Result<()> {
     adapter.connect_device(device).await?;
     let name = device.name().unwrap_or_else(|_| "Bluetooth keyboard".into());
+    let open = |name: String| {
+        let sink: Arc<dyn Sink> = hub.clone();
+        Connection::open(sink, id.to_string(), name, Transport::Ble)
+    };
 
     if let Some(state) = find_characteristic(device, BLE_SERVICE, BLE_STATE_CHARACTERISTIC).await? {
-        return follow_state(device, &state, id, &name, hub).await;
+        return follow_state(device, &state, &open(name)).await;
     }
 
     // No KeyLay service: show the battery levels, but only for keyboards in the config, so
@@ -67,23 +71,19 @@ async fn watch(adapter: &Adapter, device: &Device, id: &str, hub: &Hub) -> Resul
     if !hub.is_configured(&name, Transport::Ble) {
         return wait_for_disconnect(device).await;
     }
-    follow_batteries(device, id, &name, hub).await
+    follow_batteries(device, &open(name)).await
 }
 
-async fn follow_state(device: &Device, state: &Characteristic, id: &str, name: &str, hub: &Hub) -> Result<()> {
-    if let Some(report) = protocol::parse(&state.read().await?) {
-        hub.report(id, name, Transport::Ble, report);
-    }
+async fn follow_state(device: &Device, state: &Characteristic, connection: &Connection) -> Result<()> {
+    connection.bytes(&state.read().await?);
     let mut updates = state.notify().await?;
     let mut check = tokio::time::interval(CONNECTION_CHECK_INTERVAL);
     loop {
         tokio::select! {
             update = updates.next() => match update {
-                Some(Ok(value)) => match protocol::parse_message(&value) {
-                    Some(Message::State(report)) => hub.report(id, name, Transport::Ble, report),
-                    Some(Message::TogglePopover) => hub.toggle_popover(id),
-                    None => {}
-                },
+                Some(Ok(value)) => {
+                    connection.bytes(&value);
+                }
                 Some(Err(e)) => return Err(e.into()),
                 None => return Ok(()),
             },
@@ -98,7 +98,7 @@ async fn follow_state(device: &Device, state: &Characteristic, id: &str, name: &
 
 /// With CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_PROXY a split keyboard has one Battery
 /// Level characteristic per half, central first.
-async fn follow_batteries(device: &Device, id: &str, name: &str, hub: &Hub) -> Result<()> {
+async fn follow_batteries(device: &Device, connection: &Connection) -> Result<()> {
     let mut levels: Vec<Characteristic> = Vec::new();
     for service in device.discover_services_with_uuid(BATTERY).await? {
         levels.extend(service.discover_characteristics_with_uuid(BATTERY_LEVEL).await?);
@@ -111,7 +111,7 @@ async fn follow_batteries(device: &Device, id: &str, name: &str, hub: &Hub) -> R
         for level in &levels {
             batteries.push(level.read().await.ok().and_then(|v| v.first().copied()).filter(|&l| l <= 100));
         }
-        hub.batteries(id, name, Transport::Ble, batteries);
+        connection.batteries(batteries);
         tokio::time::sleep(BATTERY_POLL_INTERVAL).await;
         if !device.is_connected().await {
             return Ok(());

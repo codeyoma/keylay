@@ -3,6 +3,7 @@
 
 use crate::config::{Config, KeyboardConfig};
 use crate::keymap;
+use crate::intake::{Sink, Source};
 use crate::protocol::Report;
 use crate::tray;
 use serde::Serialize;
@@ -202,65 +203,6 @@ impl Hub {
         self.keymaps.svg(keyboard)
     }
 
-    /// A state message from a keyboard with the KeyLay firmware hook.
-    pub fn report(&self, id: &str, name: &str, transport: Transport, report: Report) {
-        let changed = {
-            let mut devices = self.devices.lock().unwrap();
-            let device = devices.entry(id.to_string()).or_insert_with(|| new_device(name, transport));
-            let layer_changed = device.layer != Some(report.layer) || device.layer_mask != report.layer_mask;
-            if layer_changed {
-                device.last_change = now_ms();
-            }
-            let changed = layer_changed || device.batteries != report.batteries;
-            device.layer = Some(report.layer);
-            device.layer_mask = report.layer_mask;
-            device.batteries = report.batteries;
-            changed
-        };
-        if changed {
-            self.notify();
-        }
-    }
-
-    /// Battery levels from the standard Battery Service, for a keyboard without the hook.
-    pub fn batteries(&self, id: &str, name: &str, transport: Transport, batteries: Vec<Option<u8>>) {
-        let changed = {
-            let mut devices = self.devices.lock().unwrap();
-            let device = devices.entry(id.to_string()).or_insert_with(|| new_device(name, transport));
-            let changed = device.batteries != batteries;
-            device.batteries = batteries;
-            changed
-        };
-        if changed {
-            self.notify();
-        }
-    }
-
-    /// The KeyLay key on a keyboard: opens the cheat sheet on that keyboard, or closes it.
-    pub fn toggle_popover(&self, id: &str) {
-        if !self.config.read().unwrap().keylay_key {
-            return;
-        }
-        let key = {
-            let devices = self.devices.lock().unwrap();
-            let config = self.config.read().unwrap();
-            devices.get(id).map(|d| {
-                config.keyboard_for(&d.name, d.transport).map_or_else(|| d.name.clone(), |k| k.name.clone())
-            })
-        };
-        if std::env::var_os("KEYLAY_DEBUG").is_some() {
-            eprintln!("keylay: KeyLay key on {id} ({})", key.as_deref().unwrap_or("?"));
-        }
-        // Called from a reader thread; Tauri runs the window calls on the main thread itself
-        crate::popover::toggle_for_keyboard(&self.app, key);
-    }
-
-    pub fn remove(&self, id: &str) {
-        if self.devices.lock().unwrap().remove(id).is_some() {
-            self.notify();
-        }
-    }
-
     pub fn snapshot(&self) -> Snapshot {
         let config = self.config.read().unwrap();
         let keymaps = self.keymaps.all();
@@ -407,6 +349,62 @@ fn migrate_old_config(config_path: &std::path::Path) {
         let _ = std::fs::create_dir_all(dir);
         if let Err(e) = std::fs::copy(&old, config_path) {
             eprintln!("keylay: cannot copy {}: {e}", old.display());
+        }
+    }
+}
+
+impl Sink for Hub {
+    fn state(&self, from: &Source, report: Report) {
+        let changed = {
+            let mut devices = self.devices.lock().unwrap();
+            let device = devices.entry(from.id.clone()).or_insert_with(|| new_device(&from.name, from.transport));
+            let layer_changed = device.layer != Some(report.layer) || device.layer_mask != report.layer_mask;
+            if layer_changed {
+                device.last_change = now_ms();
+            }
+            let changed = layer_changed || device.batteries != report.batteries;
+            device.layer = Some(report.layer);
+            device.layer_mask = report.layer_mask;
+            device.batteries = report.batteries;
+            changed
+        };
+        if changed {
+            self.notify();
+        }
+    }
+
+    fn batteries(&self, from: &Source, levels: Vec<Option<u8>>) {
+        let changed = {
+            let mut devices = self.devices.lock().unwrap();
+            let device = devices.entry(from.id.clone()).or_insert_with(|| new_device(&from.name, from.transport));
+            let changed = device.batteries != levels;
+            device.batteries = levels;
+            changed
+        };
+        if changed {
+            self.notify();
+        }
+    }
+
+    /// Opens the cheat sheet on that keyboard (its config name, else its device name), or
+    /// closes it.
+    fn keylay_key(&self, from: &Source) {
+        let config = self.config.read().unwrap();
+        if !config.keylay_key {
+            return;
+        }
+        let key = config.keyboard_for(&from.name, from.transport).map_or_else(|| from.name.clone(), |k| k.name.clone());
+        drop(config);
+        if std::env::var_os("KEYLAY_DEBUG").is_some() {
+            eprintln!("keylay: KeyLay key on {} ({key})", from.id);
+        }
+        // Called from a reader thread; Tauri runs the window calls on the main thread itself
+        crate::popover::toggle_for_keyboard(&self.app, Some(key));
+    }
+
+    fn gone(&self, from: &Source) {
+        if self.devices.lock().unwrap().remove(&from.id).is_some() {
+            self.notify();
         }
     }
 }
