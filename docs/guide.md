@@ -85,7 +85,16 @@ keyboard again.
 
 ## Config
 
-`config.json` in the app's config folder (menu > Open Config File):
+Use the settings window (menu > Settings…, or the sliders button in the cheat sheet). It
+edits the same `config.json`, saved automatically:
+
+- Keyboards: connected keyboards that are not set up appear under "Found, not set up"; a
+  keymap URL is checked as you paste it and its layers are listed; click a layer to rename
+  it; drag battery names to swap them.
+- General: menu bar title and layer width (with a live preview), launch at login, the KeyLay
+  key, and how often keymaps are checked (`keymapCheckMinutes`, 0 = never).
+
+The file itself is `config.json` in the app's config folder (menu > Open Config File):
 
 - macOS: `~/Library/Application Support/dev.yoma.keylay/config.json`
 - Windows: `%APPDATA%\dev.yoma.keylay\config.json`

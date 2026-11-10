@@ -14,6 +14,12 @@ pub struct Config {
     /// `{layer}` is cut or padded to this many characters, so the menu bar item keeps its
     /// width when the layer changes. 0 leaves the name as it is.
     pub layer_width: usize,
+    /// How often keymaps are checked for a newer version, in minutes; 0 = never.
+    pub keymap_check_minutes: u64,
+    /// Whether the KeyLay key on a keyboard opens and closes the cheat sheet.
+    pub keylay_key: bool,
+    /// Window background: "glass" (the desktop shows through) or "solid".
+    pub appearance: String,
     pub keyboards: Vec<KeyboardConfig>,
 }
 
@@ -37,7 +43,14 @@ pub struct KeyboardConfig {
 
 impl Default for Config {
     fn default() -> Self {
-        Config { title_format: "{layer} {battery}".into(), layer_width: 6, keyboards: Vec::new() }
+        Config {
+            title_format: "{layer} {battery}".into(),
+            layer_width: 6,
+            keymap_check_minutes: 15,
+            keylay_key: true,
+            appearance: "glass".into(),
+            keyboards: Vec::new(),
+        }
     }
 }
 
@@ -64,6 +77,15 @@ impl Config {
                 Some(format!("{}: {e}", path.display())),
             ),
         }
+    }
+
+    /// Writes the config file (from the settings window).
+    pub fn save(&self, path: &Path) -> Result<(), String> {
+        let text = serde_json::to_string_pretty(self).map_err(|e| e.to_string())?;
+        if let Some(dir) = path.parent() {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        std::fs::write(path, text + "\n").map_err(|e| format!("{}: {e}", path.display()))
     }
 
     pub fn keyboard_for(&self, device_name: &str, transport: Transport) -> Option<&KeyboardConfig> {

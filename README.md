@@ -19,6 +19,8 @@ cheat sheet of every layer.
 - **QMK and ZMK**: a small firmware hook reports the layer, over USB raw HID (QMK) or
   Bluetooth (ZMK).
 - **Always current**: keymaps are checked against GitHub every 15 minutes.
+- **Settings window**: add keyboards (connected ones are found for you), paste a keymap URL,
+  rename layers, order batteries; no JSON editing.
 - **KeyLay key**: a key in your keymap (`KL_OPEN` in QMK, `&keylay` in ZMK) opens and closes
   the cheat sheet for that keyboard.
 

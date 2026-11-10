@@ -14,6 +14,7 @@ pub const TRAY_ID: &str = "keylay";
 pub fn build(app: &AppHandle) -> tauri::Result<()> {
     let show = MenuItem::with_id(app, "show", "Show Cheat Sheet", true, None::<&str>)?;
     let reload = MenuItem::with_id(app, "reload", "Reload Config and Keymaps", true, None::<&str>)?;
+    let settings = MenuItem::with_id(app, "settings", "Settings…", true, Some("CmdOrCtrl+,"))?;
     let config = MenuItem::with_id(app, "config", "Open Config File", true, None::<&str>)?;
     let login_enabled = app.autolaunch().is_enabled().unwrap_or(false);
     let login = CheckMenuItem::with_id(app, "login", "Launch at Login", true, login_enabled, None::<&str>)?;
@@ -23,6 +24,7 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
         &[
             &show,
             &PredefinedMenuItem::separator(app)?,
+            &settings,
             &reload,
             &config,
             &login,
@@ -43,6 +45,7 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
                 let hub = app.state::<Arc<Hub>>().inner().clone();
                 std::thread::spawn(move || hub.reload());
             }
+            "settings" => crate::settings::open(app),
             "config" => crate::open_in_editor(&app.state::<Arc<Hub>>().config_path),
             "login" => {
                 let autolaunch = app.autolaunch();

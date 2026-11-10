@@ -91,6 +91,26 @@ pub fn refresh(keyboard: &KeyboardConfig, previous: Option<&Keymap>, cache_dir: 
     (keymap, changed)
 }
 
+/// Reads a keymap source for the settings window, without caching it: the layer names, or
+/// what went wrong.
+pub fn probe(source: &str) -> Result<Vec<String>, String> {
+    let source = source.trim();
+    let svg = if source.starts_with("http://") || source.starts_with("https://") {
+        match fetch(source, None)? {
+            Fetched::Body { svg, .. } => svg,
+            Fetched::NotModified => return Err("unexpected 304".into()),
+        }
+    } else {
+        let path = expand_home(source);
+        std::fs::read_to_string(&path).map_err(|e| format!("{}: {e}", path.display()))?
+    };
+    let layers = layer_names(&svg);
+    if layers.is_empty() {
+        return Err("No keymap-drawer layers in this file".into());
+    }
+    Ok(layers)
+}
+
 /// The last downloaded SVG of a keyboard and its ETag, as `<name>.svg` and `<name>.etag`.
 /// The .etag file holds the source URL on its first line, so a changed URL is not mixed up
 /// with the old file.

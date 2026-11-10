@@ -1,0 +1,93 @@
+/* KeyLay design tokens: Liquid Glass, the glass-* variables of design/keylay.pen.
+   Shared by the popover and the settings window. The windows sit on a native material
+   (macOS popover vibrancy, Windows acrylic); these translucent tints go on top of it. */
+
+:root {
+  color-scheme: light dark;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --surface: #ffffff6b; /* glass-surface */
+  --bg: #ffffff2e; /* glass-well: the key area, inputs */
+  --surface-2: #ffffff8c; /* glass-chip: switcher, toggles, chips */
+  --key: #ffffffa6; /* glass-key */
+  --key-line: #ffffffe6; /* glass-key-line */
+  --line: #0000000f; /* glass-line */
+  --edge-hi: #ffffff; /* glass-edge-hi */
+  --edge-lo: #ffffff66; /* glass-edge-lo */
+  --text: #15161a;
+  --muted: #4e525a; /* glass-muted */
+  --faint: #15161a66; /* glass-faint */
+  --menu: #ffffffcc;
+  /* Light catching the top of the glass, and the shadow under raised parts */
+  --sheen: #ffffff8c;
+  --rim: #ffffffb3;
+  --lift: #0000001a;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  /* the layer shown; set from JS */
+  --layer: #8a8f98;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #1a1c2452;
+    --bg: #0000001f;
+    --surface-2: #ffffff14;
+    --key: #ffffff12;
+    --key-line: #ffffff24;
+    --line: #ffffff1a;
+    --edge-hi: #ffffff8c;
+    --edge-lo: #ffffff14;
+    --text: #f1f2f4;
+    --muted: #ffffffb3;
+    --faint: #ffffff73;
+    --menu: #1e2028d9;
+    --sheen: #ffffff1f;
+    --rim: #ffffff26;
+    --lift: #00000059;
+  }
+}
+
+/* Glass surfaces: a bright rim along the top, a soft fall-off, and a gradient edge that is
+   brightest at the corners (design: inner shadow #FFFFFF26 y1, gradient stroke 200°). */
+.glass-rim {
+  box-shadow:
+    inset 0 1px 0 var(--rim),
+    inset 0 0 0 1px color-mix(in srgb, var(--edge-lo) 60%, transparent);
+}
+
+/* Solid: opaque, for the most contrast (Settings > Appearance, or Reduce transparency) */
+:root[data-appearance="solid"] {
+  --surface: #ffffff;
+  --bg: #f4f4f1;
+  --surface-2: #ededea;
+  --key: #ffffff;
+  --key-line: #d6d6d1;
+  --line: #e0e0dc;
+  --edge-hi: #e0e0dc;
+  --edge-lo: #e0e0dc;
+  --muted: #6b6e77;
+  --faint: #aeb0b5;
+  --menu: #ffffff;
+  --sheen: transparent;
+  --rim: transparent;
+  --lift: #00000014;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-appearance="solid"] {
+    --surface: #1b1c20;
+    --bg: #121316;
+    --surface-2: #24262b;
+    --key: #23252a;
+    --key-line: #34373e;
+    --line: #2d2f35;
+    --edge-hi: #2d2f35;
+    --edge-lo: #2d2f35;
+    --muted: #8e929b;
+    --faint: #4e525a;
+    --menu: #1b1c20;
+  }
+}

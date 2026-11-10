@@ -67,6 +67,7 @@ function deviceFor(snapshot, key) {
 async function render() {
   const snapshot = state.snapshot;
   if (!snapshot) return;
+  document.documentElement.dataset.appearance = snapshot.appearance;
 
   const entries = entriesOf(snapshot);
   if (!state.userPicked || !entries.some((e) => e.key === state.selected)) {
@@ -382,7 +383,7 @@ $("preview-end").addEventListener("click", () => {
 });
 $("pin").addEventListener("click", () => invoke("set_pinned", { pinned: !state.snapshot?.pinned }));
 $("close").addEventListener("click", () => invoke("hide_popover"));
-$("config").addEventListener("click", () => invoke("open_config"));
+$("config").addEventListener("click", () => invoke("open_settings"));
 $("reload").addEventListener("click", async () => {
   const button = $("reload");
   if (button.classList.contains("spinning")) return;

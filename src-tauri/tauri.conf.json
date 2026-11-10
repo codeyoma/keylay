@@ -24,7 +24,15 @@
         "skipTaskbar": true,
         "visibleOnAllWorkspaces": true,
         "shadow": true,
-        "transparent": true
+        "transparent": true,
+        "windowEffects": {
+          "effects": [
+            "popover",
+            "acrylic"
+          ],
+          "state": "active",
+          "radius": 24
+        }
       }
     ],
     "security": {

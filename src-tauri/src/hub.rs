@@ -53,6 +53,8 @@ pub struct Snapshot {
     pub config_error: Option<String>,
     pub title_format: String,
     pub layer_width: usize,
+    /// "glass" or "solid", as the windows should look now
+    pub appearance: &'static str,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -170,6 +172,23 @@ impl Hub {
         }
     }
 
+    pub fn config(&self) -> Config {
+        self.config.read().unwrap().clone()
+    }
+
+    /// Saves a config from the settings window, then checks the keymaps against it.
+    pub fn save_config(self: &Arc<Self>, config: Config) -> Result<(), String> {
+        config.save(&self.config_path)?;
+        let mode = crate::appearance::effective(&config.appearance);
+        *self.config.write().unwrap() = config;
+        *self.config_error.write().unwrap() = None;
+        crate::appearance::apply(&self.app, mode);
+        self.notify();
+        let hub = self.clone();
+        std::thread::spawn(move || hub.refresh_keymaps());
+        Ok(())
+    }
+
     pub fn is_configured(&self, device_name: &str, transport: Transport) -> bool {
         self.config.read().unwrap().keyboard_for(device_name, transport).is_some()
     }
@@ -214,6 +233,9 @@ impl Hub {
 
     /// The KeyLay key on a keyboard: opens the cheat sheet on that keyboard, or closes it.
     pub fn toggle_popover(&self, id: &str) {
+        if !self.config.read().unwrap().keylay_key {
+            return;
+        }
         let key = {
             let devices = self.devices.lock().unwrap();
             let config = self.config.read().unwrap();
@@ -317,6 +339,7 @@ impl Hub {
             config_error: self.config_error.read().unwrap().clone(),
             title_format: config.title_format.clone(),
             layer_width: config.layer_width,
+            appearance: crate::appearance::effective(&config.appearance),
         }
     }
 

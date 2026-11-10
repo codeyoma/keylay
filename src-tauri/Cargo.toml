@@ -22,7 +22,7 @@ uuid = "1.29.2"
 # The menu bar title in a monospaced font (same versions as tray-icon uses)
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"
-objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "objc2-core-foundation", "NSAttributedString", "NSButton", "NSColor", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSStatusBarButton", "NSStatusItem", "NSView"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "objc2-core-foundation", "NSAttributedString", "NSButton", "NSColor", "NSControl", "NSFont", "NSFontDescriptor", "NSResponder", "NSStatusBarButton", "NSStatusItem", "NSView", "NSAccessibility", "NSWorkspace"] }
 objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSAttributedString", "NSDictionary", "NSString"] }
 
 [target.'cfg(not(windows))'.dependencies]

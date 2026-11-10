@@ -1,6 +1,7 @@
 // No console window on Windows in release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod appearance;
 mod ble;
 mod config;
 mod hid;
@@ -11,6 +12,7 @@ mod keymap;
 mod menubar;
 mod popover;
 mod protocol;
+mod settings;
 mod tray;
 
 use hub::{Hub, Snapshot};
@@ -19,7 +21,46 @@ use std::sync::Arc;
 use std::time::Duration;
 use tauri::{AppHandle, Manager, State, WindowEvent};
 
-const KEYMAP_CHECK_INTERVAL: Duration = Duration::from_secs(15 * 60);
+
+#[tauri::command]
+fn get_config(hub: State<'_, Arc<Hub>>) -> config::Config {
+    hub.config()
+}
+
+#[tauri::command]
+fn save_config(hub: State<'_, Arc<Hub>>, config: config::Config) -> Result<(), String> {
+    hub.inner().save_config(config)
+}
+
+/// The layer names in a keymap URL or file, for the settings window
+#[tauri::command]
+async fn check_keymap(source: String) -> Result<Vec<String>, String> {
+    tauri::async_runtime::spawn_blocking(move || keymap::probe(&source))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+fn get_login(app: AppHandle) -> bool {
+    use tauri_plugin_autostart::ManagerExt;
+    app.autolaunch().is_enabled().unwrap_or(false)
+}
+
+#[tauri::command]
+fn set_login(app: AppHandle, enabled: bool) -> Result<(), String> {
+    use tauri_plugin_autostart::ManagerExt;
+    let autolaunch = app.autolaunch();
+    let result = if enabled { autolaunch.enable() } else { autolaunch.disable() };
+    result.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn open_settings(app: AppHandle) {
+    if let Some(window) = app.get_webview_window(popover::LABEL) {
+        popover::hide(&window);
+    }
+    settings::open(&app);
+}
 
 #[tauri::command]
 fn get_snapshot(hub: State<'_, Arc<Hub>>) -> Snapshot {
@@ -84,6 +125,12 @@ fn main() {
             get_keymap_svg,
             reload,
             open_config,
+            get_config,
+            save_config,
+            check_keymap,
+            get_login,
+            set_login,
+            open_settings,
             set_pinned,
             hide_popover,
             fit_popover
@@ -99,6 +146,7 @@ fn main() {
             let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir));
             app.manage(hub.clone());
 
+            appearance::apply(&handle, appearance::effective(&hub.config().appearance));
             tray::build(&handle)?;
             tray::refresh(&handle, &hub.snapshot());
 
@@ -108,13 +156,30 @@ fn main() {
                 let hub = hub.clone();
                 std::thread::spawn(move || loop {
                     hub.refresh_keymaps();
-                    std::thread::sleep(KEYMAP_CHECK_INTERVAL);
+                    // The interval is a setting (0 = never), so look at it every minute
+                    let mut waited = 0;
+                    loop {
+                        std::thread::sleep(Duration::from_secs(60));
+                        waited += 1;
+                        let every = hub.config().keymap_check_minutes;
+                        if every > 0 && waited >= every {
+                            break;
+                        }
+                    }
                 });
             }
             hid::start(hub.clone());
             ble::start(hub.clone());
             // Debugging aid: open the popover right away, centered and pinned (so it does not
             // hide when another app has the focus)
+            if std::env::var_os("KEYLAY_SHOW_SETTINGS").is_some() {
+                let handle = handle.clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(Duration::from_millis(1500));
+                    let app = handle.clone();
+                    let _ = handle.run_on_main_thread(move || settings::open(&app));
+                });
+            }
             if std::env::var_os("KEYLAY_SHOW_POPOVER").is_some() {
                 hub.set_pinned(true);
                 std::thread::spawn(move || {
@@ -127,6 +192,7 @@ fn main() {
         })
         .on_window_event(|window, event| match event {
             // Behave like a popover: hide when another app is clicked, unless pinned.
+            // (Only the popover: other windows, like settings, close for real.)
             WindowEvent::Focused(false) if window.label() == popover::LABEL => {
                 let pinned = window.state::<Arc<Hub>>().pinned();
                 if !pinned {
@@ -135,8 +201,8 @@ fn main() {
                     }
                 }
             }
-            // Closing the window only hides it; the app lives in the tray.
-            WindowEvent::CloseRequested { api, .. } => {
+            // Closing the popover only hides it; the app lives in the tray.
+            WindowEvent::CloseRequested { api, .. } if window.label() == popover::LABEL => {
                 api.prevent_close();
                 let _ = window.hide();
             }
