@@ -34,6 +34,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          components: clippy
 
       - uses: swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
@@ -41,7 +42,15 @@ jobs:
 
       - run: npm ci
 
+      # Every check (scripts/check.sh): tests, clippy, JS syntax, workflow lint
+      - name: Check
+        if: matrix.platform == 'macos-latest'
+        run: |
+          brew install actionlint
+          npm run check
+
       - name: Test
+        if: matrix.platform != 'macos-latest'
         working-directory: src-tauri
         run: cargo test
 

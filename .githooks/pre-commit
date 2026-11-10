@@ -1,0 +1,4 @@
+#!/bin/bash
+# Runs `npm run check` before each commit. Enabled by `npm install` (core.hooksPath).
+# Skip once with `git commit --no-verify`.
+exec "$(git rev-parse --show-toplevel)/scripts/check.sh"

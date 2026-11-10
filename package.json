@@ -5,7 +5,10 @@
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
-    "build": "tauri build"
+    "build": "tauri build",
+    "check": "scripts/check.sh",
+    "ui:preview": "node scripts/ui-preview/server.mjs",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2"
