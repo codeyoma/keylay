@@ -103,6 +103,14 @@
         return commands[cmd] ? commands[cmd](args) : null;
       },
     },
+    window: {
+      getCurrentWindow: () => ({
+        outerPosition: async () => ({ toLogical: () => ({ x: 0, y: 0 }) }),
+        scaleFactor: async () => 1,
+        setPosition: async (position) => calls.push({ cmd: "set_position", args: position }),
+      }),
+    },
+    dpi: { LogicalPosition: function (x, y) { Object.assign(this, { x, y }); } },
     event: {
       listen: async (event, handler) => {
         (handlers[event] ??= []).push(handler);

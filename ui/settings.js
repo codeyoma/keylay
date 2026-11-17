@@ -478,3 +478,5 @@ Promise.all([invoke("get_config"), invoke("get_snapshot"), invoke("get_login")])
   showTab("keyboards");
   renderKeyboards();
 });
+
+dragsWindow(document.querySelector(".titlebar"));

@@ -96,3 +96,48 @@ function draggable(item, { zones, handle, onDrop, onClick }) {
     window.addEventListener("pointercancel", up);
   });
 }
+
+// Moves the window by dragging `bar` (its empty parts, not its buttons). Not the native drag
+// (a Tauri drag region): on macOS it moves the window's top left to the pointer when the
+// click is not the event AppKit is handling, e.g. the first click into the cheat sheet that
+// the KeyLay key opened.
+function dragsWindow(bar) {
+  bar.addEventListener("pointerdown", (down) => {
+    if (down.button !== 0 || down.target.closest("button, input, select, a, .menu")) return;
+    down.preventDefault();
+    const { getCurrentWindow } = window.__TAURI__.window;
+    const { LogicalPosition } = window.__TAURI__.dpi;
+    const win = getCurrentWindow();
+    // The pointer moves in screen points; the window follows by the same amount, one move
+    // at a time
+    let origin = null;
+    let offset = null;
+    let moving = false;
+    const follow = async () => {
+      if (moving || !origin || !offset) return;
+      moving = true;
+      const { x, y } = offset;
+      offset = null;
+      await win.setPosition(new LogicalPosition(origin.x + x, origin.y + y)).catch(() => {});
+      moving = false;
+      follow();
+    };
+    Promise.all([win.outerPosition(), win.scaleFactor()]).then(([position, scale]) => {
+      origin = position.toLogical(scale);
+      follow();
+    });
+
+    const move = (e) => {
+      offset = { x: e.screenX - down.screenX, y: e.screenY - down.screenY };
+      follow();
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  });
+}

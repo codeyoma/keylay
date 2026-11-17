@@ -34,6 +34,12 @@ if grep -nE 'draggable *= *true|"dragstart"|"dragover"|"drop"' ui/*.js ui/*.html
   echo "Use draggable() from ui/common.js for drag and drop (pointer events)." >&2
   failed=1
 fi
+# Windows move through dragsWindow() in ui/common.js: the native drag region jumps the
+# window to the pointer on macOS
+if grep -n 'data-tauri-drag-region\|startDragging' ui/*.js ui/*.html; then
+  echo "Use dragsWindow() from ui/common.js to move a window." >&2
+  failed=1
+fi
 # Third-party actions are pinned to a commit SHA, so a moved tag cannot change a build
 if grep -nE '^\s*-?\s*uses: ' .github/workflows/*.yml | grep -vE 'uses: \./|@[0-9a-f]{40}( |$)'; then
   echo "Pin each action to a full commit SHA: uses: owner/action@<sha> # vN" >&2

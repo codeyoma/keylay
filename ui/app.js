@@ -350,6 +350,7 @@ $("preview-end").addEventListener("click", () => {
 });
 $("pin").addEventListener("click", () => invoke("set_pinned", { pinned: !state.snapshot?.pinned }));
 $("close").addEventListener("click", () => invoke("hide_popover"));
+dragsWindow(document.querySelector(".topbar"));
 $("config").addEventListener("click", () => invoke("open_settings"));
 $("reload").addEventListener("click", async () => {
   const button = $("reload");
