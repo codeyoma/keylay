@@ -63,6 +63,7 @@ pub fn preview(format: &str, layer_width: usize, device: Option<&DeviceView>) ->
                 layer_mask: 0b10,
                 batteries: vec![BatteryView { label: "Battery".into(), level: Some(62) }],
                 status: String::new(),
+                link: "Bluetooth",
             };
             &sample
         }
@@ -87,6 +88,7 @@ mod tests {
             layer_mask: 1,
             batteries: batteries.iter().map(|&level| BatteryView { label: "b".into(), level }).collect(),
             status: String::new(),
+            link: "Bluetooth",
         }
     }
 

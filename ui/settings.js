@@ -140,11 +140,6 @@ function renderKeymapStatus(k) {
   }
 }
 
-function ago(ms) {
-  const s = (Date.now() - ms) / 1000;
-  return s < 45 ? "just now" : `${Math.round(s / 60)} min ago`;
-}
-
 async function probe(source) {
   if (!source || state.probe[source]?.pending) return;
   state.probe[source] = { pending: true };
@@ -233,7 +228,8 @@ function renameLayer(chip, k, names, i) {
 function renderBatteries(k, d) {
   const levels = d?.batteries ?? [];
   const count = Math.max(levels.length, k.batteryLabels?.length ?? 0);
-  const defaults = (i) => (count === 1 ? "Battery" : i === 0 ? "Central" : `Peripheral ${i}`);
+  // The app names unlabelled batteries ("Central", "Peripheral 1"); only typed names are saved
+  const label = (i) => k.batteryLabels?.[i]?.trim() || levels[i]?.label || "";
   const box = $("f-batteries");
   if (count === 0) {
     const none = document.createElement("span");
@@ -242,6 +238,10 @@ function renderBatteries(k, d) {
     box.replaceChildren(none);
     return;
   }
+  const store = (labels) => {
+    while (labels.length && !labels.at(-1)) labels.pop();
+    k.batteryLabels = labels;
+  };
   box.replaceChildren(
     ...Array.from({ length: count }, (_, i) => {
       const row = document.createElement("div");
@@ -249,10 +249,12 @@ function renderBatteries(k, d) {
       row.innerHTML =
         '<svg class="icon grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg><input spellcheck="false" /><span class="now"></span>';
       const input = row.querySelector("input");
-      input.value = k.batteryLabels?.[i] ?? defaults(i);
+      input.value = k.batteryLabels?.[i] ?? "";
+      input.placeholder = levels[i]?.label ?? "";
       input.addEventListener("input", () => {
-        k.batteryLabels = Array.from({ length: count }, (_, j) => k.batteryLabels?.[j] ?? defaults(j));
-        k.batteryLabels[i] = input.value;
+        const labels = Array.from({ length: count }, (_, j) => k.batteryLabels?.[j] ?? "");
+        labels[i] = input.value.trim();
+        store(labels);
         save();
       });
       const level = levels[i]?.level;
@@ -263,8 +265,8 @@ function renderBatteries(k, d) {
         zones: () => [box],
         handle: ".grip",
         onDrop: () => {
-          const labels = Array.from({ length: count }, (_, j) => k.batteryLabels?.[j] ?? defaults(j));
-          k.batteryLabels = [...box.querySelectorAll(".battery")].map((r) => labels[Number(r.dataset.index)]);
+          // Moving a label names the batteries explicitly, in the new order
+          store([...box.querySelectorAll(".battery")].map((r) => label(Number(r.dataset.index))));
           renderDetail();
           save();
         },

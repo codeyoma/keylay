@@ -138,7 +138,8 @@ solid) and an open settings window all switch to the file's version.
 - `keymap`: keymap-drawer SVG, a URL or a file path (`~` works).
 - `batteryLabels`: names of the batteries in the order the firmware sends them: the
   keyboard or central first, then the peripherals in pairing order. Swap them if the halves
-  come out reversed.
+  come out reversed. An empty or missing entry keeps the app's name for it ("Central",
+  "Peripheral 1", or "Battery" for one).
 - `layerNames`: renames, by layer position; an empty entry keeps the keymap's name
   (`["", "", "Down"]` renames only layer 2). Also names the layers when there is no SVG.
 - `titleFormat` (macOS menu bar): `{keyboard}`, `{layer}`, `{battery}` (the lowest level,

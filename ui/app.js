@@ -72,7 +72,7 @@ async function render() {
 
 function linkHtml(device) {
   if (!device) return `${icon("bleOff")}<span>Not connected</span>`;
-  return device.transport === "ble" ? `${icon("ble")}<span>Bluetooth</span>` : `${icon("usb")}<span>USB</span>`;
+  return `${icon(device.transport)}<span>${device.link}</span>`;
 }
 
 function renderTopBar(snapshot, entries, entry, device) {
@@ -90,7 +90,7 @@ function renderTopBar(snapshot, entries, entry, device) {
       item.setAttribute("aria-selected", String(e.key === state.selected));
       item.innerHTML = `<span class="dot${d ? " on" : ""}"></span><span class="name"></span><span class="meta"></span>`;
       item.querySelector(".name").textContent = e.key;
-      item.querySelector(".meta").textContent = d ? (d.layerName ?? (d.transport === "ble" ? "Bluetooth" : "USB")) : "";
+      item.querySelector(".meta").textContent = d ? (d.layerName ?? d.link) : "";
       item.addEventListener("click", () => {
         state.selected = e.key;
         state.userPicked = true;
@@ -173,14 +173,6 @@ function renderChips(device, keyboard) {
     $("preview-text").textContent = `Previewing ${layers[state.preview] ?? "layer " + state.preview}`;
     $("preview-end").textContent = device?.layer != null ? "Follow the keyboard" : "Done";
   }
-}
-
-function ago(ms) {
-  const s = Math.max(0, (Date.now() - ms) / 1000);
-  if (s < 45) return "just now";
-  if (s < 90 * 60) return `${Math.max(1, Math.round(s / 60))} min ago`;
-  if (s < 36 * 3600) return `${Math.round(s / 3600)} h ago`;
-  return `${Math.round(s / 86400)} days ago`;
 }
 
 function renderFooter(snapshot, keyboard) {

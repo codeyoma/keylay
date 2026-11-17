@@ -26,6 +26,15 @@ const layerColor = (snapshot, i) => {
   return colors[i % colors.length];
 };
 
+// "just now", "5 min ago", "3 h ago", "2 days ago"
+function ago(ms) {
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 45) return "just now";
+  if (s < 90 * 60) return `${Math.max(1, Math.round(s / 60))} min ago`;
+  if (s < 36 * 3600) return `${Math.round(s / 3600)} h ago`;
+  return `${Math.round(s / 86400)} days ago`;
+}
+
 // The connected device for a keyboard: `key` is its config name, or the device name for a
 // keyboard that is not in the config
 const deviceFor = (snapshot, key) => snapshot?.devices.find((d) => d.key === key) ?? null;

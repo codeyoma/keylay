@@ -48,6 +48,7 @@
     layerMask: 0b11,
     batteries,
     status: "",
+    link: params.has("battery") ? "Bluetooth" : "USB",
   };
   layers.then((names) => {
     device.layerName = names[1] ?? "Layer 1";
@@ -87,12 +88,8 @@
     save_config: ({ config: next }) => Object.assign(config, next),
     get_keymap_svg: () => keymap,
     check_keymap: async ({ source }) => layerNames(await (await fetch(source)).text()),
-    // Close to the app's rules (title.rs), good enough to see the preview change
-    preview_title: ({ format }) =>
-      format
-        .replace("{keyboard}", device.key)
-        .replace("{layer}", device.layerName.padEnd(config.layerWidth, " "))
-        .replace("{battery}", " 62%"),
+    // The real title comes from title.rs; the preview only shows which parts are in it
+    preview_title: ({ format }) => format,
     get_login: () => false,
   };
 

@@ -54,6 +54,8 @@ pub struct DeviceView {
     pub batteries: Vec<BatteryView>,
     /// "Bluetooth · Lower", or "USB · battery only" for a keyboard without layer reports
     pub status: String,
+    /// "USB" or "Bluetooth"
+    pub link: &'static str,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -150,7 +152,11 @@ fn device_view(id: &str, d: &Device, keyboard: Option<&KeyboardConfig>, layers: 
         .iter()
         .enumerate()
         .map(|(i, &level)| BatteryView {
-            label: labels.get(i).cloned().unwrap_or_else(|| default_battery_label(i, d.batteries.len())),
+            label: labels
+                .get(i)
+                .filter(|l| !l.trim().is_empty())
+                .cloned()
+                .unwrap_or_else(|| default_battery_label(i, d.batteries.len())),
             level,
         })
         .collect();
@@ -174,6 +180,7 @@ fn device_view(id: &str, d: &Device, keyboard: Option<&KeyboardConfig>, layers: 
         layer_mask: d.layer_mask,
         batteries,
         status,
+        link,
     }
 }
 
@@ -226,6 +233,15 @@ mod tests {
         assert_eq!(view.status, "Bluetooth · Lower");
         assert_eq!(view.batteries[1].label, "Right");
         assert_eq!(view.lowest_battery(), Some(40));
+    }
+
+    #[test]
+    fn an_empty_battery_label_keeps_the_default() {
+        let d = device("Sweep Dongle", Transport::Ble, Some(0), &[Some(80), Some(40), Some(60)]);
+        let view = device_view("a", &d, Some(&keyboard("Sweep", &["Dongle", ""])), None);
+        let labels: Vec<_> = view.batteries.iter().map(|b| b.label.as_str()).collect();
+        assert_eq!(labels, ["Dongle", "Peripheral 1", "Peripheral 2"]);
+        assert_eq!(view.link, "Bluetooth");
     }
 
     #[test]
