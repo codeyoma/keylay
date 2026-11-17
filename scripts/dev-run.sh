@@ -3,9 +3,10 @@
 # screenshot of it.
 #
 #   scripts/dev-run.sh [popover|settings|none] [output.png]
+#   scripts/dev-run.sh stop
 #
-# Prints the screenshot path. The app keeps running (quit it from the menu bar, or
-# `pkill -x keylay`); it replaces any running KeyLay, the installed one included.
+# Prints the screenshot path. The debug app keeps running in place of any running KeyLay,
+# the installed one included; `stop` quits it and starts /Applications/KeyLay.app again.
 #
 # Why a bundle: the bare binary (target/debug/keylay) has no Info.plist, so macOS kills it
 # (SIGABRT, a TCC privacy violation) as soon as it touches Bluetooth. The KEYLAY_SHOW_*
@@ -14,12 +15,21 @@ set -euo pipefail
 cd "$(dirname "$0")/../src-tauri"
 
 window=${1:-popover}
+if [ "$window" = stop ]; then
+  pkill -x keylay || true
+  sleep 1
+  if [ -d /Applications/KeyLay.app ]; then
+    open /Applications/KeyLay.app
+    echo "Started /Applications/KeyLay.app"
+  fi
+  exit 0
+fi
 out=${2:-${TMPDIR:-/tmp}/keylay-$window.png}
 case "$window" in
   popover) env=(--env KEYLAY_SHOW_POPOVER=1) ;;
   settings) env=(--env KEYLAY_SHOW_SETTINGS=1) ;;
   none) env=() ;;
-  *) echo "usage: $0 [popover|settings|none] [output.png]" >&2; exit 2 ;;
+  *) echo "usage: $0 [popover|settings|none] [output.png] | stop" >&2; exit 2 ;;
 esac
 
 # cargo lives in the rustup toolchain, which is not always on PATH

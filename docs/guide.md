@@ -101,9 +101,11 @@ edits the same `config.json`, saved automatically:
 
 - Keyboards: connected keyboards that are not set up appear under "Found, not set up"; a
   keymap URL is checked as you paste it and its layers are listed; click a layer to rename
-  it; drag battery names to swap them.
-- General: menu bar title and layer width (with a live preview), launch at login, the KeyLay
-  key, and how often keymaps are checked (`keymapCheckMinutes`, 0 = never).
+  it; drag a battery name to another place when the halves come out reversed.
+- General: the menu bar title, built by dragging Layer, Keyboard and Battery into order in
+  the Shown row (drag one to Hidden, or click it, to leave it out), and the layer width,
+  both with a live preview; launch at login, the KeyLay key, and how often keymaps are
+  checked (`keymapCheckMinutes`, 0 = never).
 
 The file itself is `config.json` in the app's config folder (menu > Open Config File):
 
@@ -137,7 +139,8 @@ The file itself is `config.json` in the app's config folder (menu > Open Config 
   come out reversed.
 - `layerNames`: only needed when there is no SVG, or to rename layers.
 - `titleFormat` (macOS menu bar): `{keyboard}`, `{layer}`, `{battery}` (the lowest level,
-  always 4 characters).
+  always 4 characters), separated by spaces. The settings window writes it from the Shown
+  row; other text in it is dropped the next time the parts are reordered there.
 - `layerWidth`: characters for `{layer}`; longer names end in `…` (`Colemak` becomes
   `Colem…`). 0 shows names as they are.
 
