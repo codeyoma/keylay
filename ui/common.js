@@ -35,10 +35,6 @@ function ago(ms) {
   return `${Math.round(s / 86400)} days ago`;
 }
 
-// The connected device for a keyboard: `key` is its config name, or the device name for a
-// keyboard that is not in the config
-const deviceFor = (snapshot, key) => snapshot?.devices.find((d) => d.key === key) ?? null;
-
 // Drag to reorder, with pointer events (HTML drag and drop is not reliable in the webview).
 // While dragged, the item follows the pointer and a gap opens where it would land, in
 // whichever of `zones()` is nearest. A press that does not move is a click.

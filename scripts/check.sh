@@ -19,9 +19,12 @@ step "Clippy"
 (cd src-tauri && cargo clippy --quiet --all-targets -- -D warnings)
 
 step "JavaScript syntax"
-for f in ui/*.js scripts/ui-preview/*.mjs scripts/ui-preview/*.js; do
+for f in ui/*.js scripts/ui-preview/*.mjs scripts/ui-preview/*.js scripts/tests/*.js; do
   node --check "$f"
 done
+
+step "JavaScript tests"
+node --test scripts/tests/
 
 step "Rules"
 failed=0

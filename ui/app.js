@@ -3,11 +3,8 @@
 
 const state = {
   snapshot: null,
-  selected: null, // switcher key: config name, or device name for keyboards not in the config
-  userPicked: false, // a pick in the switcher wins over "follow the active keyboard" until reopened
+  picks: { selected: null, userPicked: false, preview: null, liveLayer: undefined }, // selection.js
   mode: read("mode", "current"),
-  preview: null, // layer index clicked in the layer row; null follows the keyboard
-  liveLayer: undefined, // to drop the preview when the keyboard changes layer
   sheetFor: undefined, // "name#revision" of the SVG in #sheet
   svg: null,
   fullViewBox: null,
@@ -32,34 +29,13 @@ function write(key, value) {
   } catch {}
 }
 
-// Switcher entries: the keyboards in the config, then connected keyboards that are not in it.
-function entriesOf(snapshot) {
-  const entries = snapshot.keyboards.map((k) => ({ key: k.name, keyboard: k }));
-  for (const d of snapshot.devices) {
-    if (!d.keyboard && !entries.some((e) => e.key === d.name)) entries.push({ key: d.name, keyboard: null });
-  }
-  return entries;
-}
-
 async function render() {
   const snapshot = state.snapshot;
   if (!snapshot) return;
   document.documentElement.dataset.appearance = snapshot.appearance;
 
-  const entries = entriesOf(snapshot);
-  if (!state.userPicked || !entries.some((e) => e.key === state.selected)) {
-    const active = snapshot.devices[0];
-    state.selected = active ? active.key : (entries[0]?.key ?? null);
-  }
-  const entry = entries.find((e) => e.key === state.selected) ?? null;
-  const keyboard = entry?.keyboard ?? null;
-  const device = deviceFor(snapshot, state.selected);
-
-  const live = device?.layer ?? null;
-  if (live !== state.liveLayer) {
-    state.liveLayer = live;
-    state.preview = null;
-  }
+  const { entries, entry, keyboard, device, live, picks } = select(snapshot, state.picks);
+  state.picks = picks;
   document.documentElement.style.setProperty("--layer", layerColor(snapshot, live ?? 0));
 
   renderTopBar(snapshot, entries, entry, device);
@@ -87,14 +63,12 @@ function renderTopBar(snapshot, entries, entry, device) {
       const item = document.createElement("button");
       item.className = "menu-item";
       item.setAttribute("role", "option");
-      item.setAttribute("aria-selected", String(e.key === state.selected));
+      item.setAttribute("aria-selected", String(e.key === state.picks.selected));
       item.innerHTML = `<span class="dot${d ? " on" : ""}"></span><span class="name"></span><span class="meta"></span>`;
       item.querySelector(".name").textContent = e.key;
       item.querySelector(".meta").textContent = d ? (d.layerName ?? d.link) : "";
       item.addEventListener("click", () => {
-        state.selected = e.key;
-        state.userPicked = true;
-        state.preview = null;
+        state.picks = { ...state.picks, selected: e.key, userPicked: true, preview: null };
         closeMenu();
         render();
       });
@@ -158,9 +132,9 @@ function renderChips(device, keyboard) {
       chip.style.setProperty("--chip", layerColor(state.snapshot, i));
       if (i === live) chip.classList.add("active");
       else if (device && device.layerMask & (1 << i)) chip.classList.add("on");
-      if (i === state.preview || (live == null && i === shownLayer(live))) chip.classList.add("preview");
+      if (i === state.picks.preview || (live == null && i === shownLayer(state.picks, live, state.mode))) chip.classList.add("preview");
       chip.addEventListener("click", () => {
-        state.preview = state.preview === i || i === live ? null : i;
+        state.picks = { ...state.picks, preview: previewAfterClick(state.picks, i, live) };
         render();
       });
       return chip;
@@ -168,9 +142,10 @@ function renderChips(device, keyboard) {
   );
 
   const banner = $("preview");
-  banner.hidden = state.preview == null;
-  if (state.preview != null) {
-    $("preview-text").textContent = `Previewing ${layers[state.preview] ?? "layer " + state.preview}`;
+  const preview = state.picks.preview;
+  banner.hidden = preview == null;
+  if (preview != null) {
+    $("preview-text").textContent = `Previewing ${layers[preview] ?? "layer " + preview}`;
     $("preview-end").textContent = device?.layer != null ? "Follow the keyboard" : "Done";
   }
 }
@@ -278,12 +253,6 @@ function translation(el) {
 
 // live: the keyboard's active layer, or null when it is not connected. A keyboard that is not
 // connected has no current layer, so it shows every layer with none highlighted.
-// The layer "Current" shows: the one clicked in the layer row, else the keyboard's, else (not
-// connected, or no layer reports) the first. "All" scrolls to it, or stays at the top.
-function shownLayer(live) {
-  return state.preview ?? live ?? (state.mode === "current" ? 0 : null);
-}
-
 function showLayer(live) {
   const connected = live != null;
   const mode = state.mode;
@@ -294,7 +263,7 @@ function showLayer(live) {
   const { svg, groups, labels } = state;
   if (!svg || groups.length === 0) return fit(mode);
 
-  const target = shownLayer(live); // the layer to show or scroll to
+  const target = shownLayer(state.picks, live, state.mode); // the layer to show or scroll to
   const index = target == null ? -1 : Math.min(target, groups.length - 1);
   const current = mode === "current";
   groups.forEach((g, i) => {
@@ -376,7 +345,7 @@ for (const button of document.querySelectorAll(".toggle button")) {
 }
 
 $("preview-end").addEventListener("click", () => {
-  state.preview = null;
+  state.picks = { ...state.picks, preview: null };
   render();
 });
 $("pin").addEventListener("click", () => invoke("set_pinned", { pinned: !state.snapshot?.pinned }));
@@ -400,7 +369,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 // "checked 2 min ago" keeps counting while the popover is open
-setInterval(() => state.snapshot && renderFooter(state.snapshot, entriesOf(state.snapshot).find((e) => e.key === state.selected)?.keyboard ?? null), 30000);
+setInterval(() => state.snapshot && renderFooter(state.snapshot, entriesOf(state.snapshot).find((e) => e.key === state.picks.selected)?.keyboard ?? null), 30000);
 
 listen("snapshot", (e) => {
   state.snapshot = e.payload;
@@ -408,9 +377,12 @@ listen("snapshot", (e) => {
 });
 // The payload names the keyboard whose KeyLay key opened the popover, if any
 listen("popover-shown", (e) => {
-  state.userPicked = Boolean(e.payload);
-  if (e.payload) state.selected = e.payload;
-  state.preview = null;
+  state.picks = {
+    ...state.picks,
+    userPicked: Boolean(e.payload),
+    selected: e.payload || state.picks.selected,
+    preview: null,
+  };
   state.shown = null; // scroll to the current layer again
   closeMenu();
   render();
