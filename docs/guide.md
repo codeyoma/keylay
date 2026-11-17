@@ -107,7 +107,9 @@ edits the same `config.json`, saved automatically:
   both with a live preview; launch at login, the KeyLay key, and how often keymaps are
   checked (`keymapCheckMinutes`, 0 = never).
 
-The file itself is `config.json` in the app's config folder (menu > Open Config File):
+The file itself is `config.json` in the app's config folder (menu > Open Config File). After
+editing it by hand, choose Reload Config and Keymaps in the menu: the app, its look (glass or
+solid) and an open settings window all switch to the file's version.
 
 - macOS: `~/Library/Application Support/dev.yoma.keylay/config.json`
 - Windows: `%APPDATA%\dev.yoma.keylay\config.json`

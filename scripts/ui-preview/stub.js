@@ -7,7 +7,8 @@
 //   battery    a Bluetooth keyboard with three batteries
 //   solid      the solid appearance instead of glass
 //
-// window.preview.calls records every command the page sent (fit_popover heights, saves).
+// window.preview.calls records every command the page sent (fit_popover heights, saves);
+// window.preview.emit(event, payload) sends an app event (snapshot, config) to the page.
 
 (() => {
   const params = new URLSearchParams(location.search);
@@ -94,7 +95,9 @@
     get_login: () => false,
   };
 
-  window.preview = { calls, config, device };
+  const handlers = {};
+  const emit = (event, payload) => (handlers[event] ?? []).forEach((h) => h({ event, payload }));
+  window.preview = { calls, config, device, emit };
   window.__TAURI__ = {
     core: {
       invoke: async (cmd, args = {}) => {
@@ -102,6 +105,11 @@
         return commands[cmd] ? commands[cmd](args) : null;
       },
     },
-    event: { listen: async () => () => {} },
+    event: {
+      listen: async (event, handler) => {
+        (handlers[event] ??= []).push(handler);
+        return () => {};
+      },
+    },
   };
 })();

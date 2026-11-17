@@ -438,6 +438,17 @@ function showTab(tab) {
 }
 for (const t of document.querySelectorAll(".tab")) t.addEventListener("click", () => showTab(t.dataset.tab));
 
+// A config read again from config.json (Reload) replaces this window's copy, so the next
+// save keeps the file's edits; the window's own saves come back too and are skipped
+listen("config", (e) => {
+  if (e.payload.origin !== "file" || !state.config) return;
+  clearTimeout(saveTimer);
+  state.config = e.payload.config;
+  state.selected = Math.min(state.selected, Math.max(0, state.config.keyboards.length - 1));
+  renderKeyboards();
+  if (state.tab === "general") renderGeneral();
+});
+
 listen("snapshot", (e) => {
   state.snapshot = e.payload;
   document.documentElement.dataset.appearance = e.payload.appearance;

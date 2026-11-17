@@ -136,7 +136,7 @@ fn main() {
             let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir));
             app.manage(hub.clone());
 
-            appearance::apply(&handle, appearance::effective(&hub.config().appearance));
+            hub.apply_appearance();
             tray::build(&handle)?;
             tray::refresh(&handle, &hub.snapshot());
 

@@ -47,6 +47,23 @@ pub struct KeyboardView {
     pub keymap_error: Option<String>,
 }
 
+/// Where a config change came from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ConfigOrigin {
+    /// config.json, read again (Reload)
+    File,
+    /// the settings window's own save
+    Settings,
+}
+
+/// The `config` event: the config now in use.
+#[derive(Debug, Clone, Serialize)]
+pub struct ConfigChanged {
+    pub config: Config,
+    pub origin: ConfigOrigin,
+}
+
 pub struct Hub {
     app: AppHandle,
     pub config_path: PathBuf,
@@ -72,10 +89,34 @@ impl Hub {
     /// Re-reads the config file and checks every keymap. Blocks on the network.
     pub fn reload(&self) {
         let (config, error) = Config::load_or_create(&self.config_path);
+        self.adopt(config, error, ConfigOrigin::File);
+        self.refresh_keymaps();
+    }
+
+    /// Saves a config from the settings window, then checks the keymaps against it.
+    pub fn save_config(self: &Arc<Self>, config: Config) -> Result<(), String> {
+        config.save(&self.config_path)?;
+        self.adopt(config, None, ConfigOrigin::Settings);
+        let hub = self.clone();
+        std::thread::spawn(move || hub.refresh_keymaps());
+        Ok(())
+    }
+
+    /// Every config change goes through here: it puts the config in place, makes the windows
+    /// look the way it says, and tells the windows and the tray. The settings window takes
+    /// over a config read from the file, so its next save keeps the file's edits.
+    fn adopt(&self, config: Config, error: Option<String>, origin: ConfigOrigin) {
         *self.config.write().unwrap() = config;
         *self.config_error.write().unwrap() = error;
-        self.refresh_keymaps();
+        self.apply_appearance();
+        let _ = self.app.emit("config", ConfigChanged { config: self.config(), origin });
         self.notify();
+    }
+
+    /// Glass or solid for the open windows, from the config (and Reduce transparency).
+    pub fn apply_appearance(&self) {
+        let mode = crate::appearance::effective(&self.config.read().unwrap().appearance);
+        crate::appearance::apply(&self.app, mode);
     }
 
     /// Checks every keymap against its source, then tells the tray and the popover (which
@@ -115,19 +156,6 @@ impl Hub {
 
     pub fn config(&self) -> Config {
         self.config.read().unwrap().clone()
-    }
-
-    /// Saves a config from the settings window, then checks the keymaps against it.
-    pub fn save_config(self: &Arc<Self>, config: Config) -> Result<(), String> {
-        config.save(&self.config_path)?;
-        let mode = crate::appearance::effective(&config.appearance);
-        *self.config.write().unwrap() = config;
-        *self.config_error.write().unwrap() = None;
-        crate::appearance::apply(&self.app, mode);
-        self.notify();
-        let hub = self.clone();
-        std::thread::spawn(move || hub.refresh_keymaps());
-        Ok(())
     }
 
     pub fn is_configured(&self, device_name: &str, transport: Transport) -> bool {
