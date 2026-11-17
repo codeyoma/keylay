@@ -10,6 +10,7 @@ mod hub;
 mod icon;
 mod intake;
 mod keymap;
+mod login;
 #[cfg(target_os = "macos")]
 mod menubar;
 mod popover;
@@ -41,20 +42,6 @@ async fn check_keymap(source: String) -> Result<Vec<String>, String> {
     tauri::async_runtime::spawn_blocking(move || keymap::probe(&source))
         .await
         .map_err(|e| e.to_string())?
-}
-
-#[tauri::command]
-fn get_login(app: AppHandle) -> bool {
-    use tauri_plugin_autostart::ManagerExt;
-    app.autolaunch().is_enabled().unwrap_or(false)
-}
-
-#[tauri::command]
-fn set_login(app: AppHandle, enabled: bool) -> Result<(), String> {
-    use tauri_plugin_autostart::ManagerExt;
-    let autolaunch = app.autolaunch();
-    let result = if enabled { autolaunch.enable() } else { autolaunch.disable() };
-    result.map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -117,8 +104,8 @@ fn main() {
             get_config,
             save_config,
             check_keymap,
-            get_login,
-            set_login,
+            login::commands::get_login,
+            login::commands::set_login,
             open_settings,
             popover::commands::set_pinned,
             popover::commands::hide_popover,

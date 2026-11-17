@@ -421,12 +421,9 @@ $("g-interval").addEventListener("click", (e) => {
   renderGeneral();
   save();
 });
-$("g-login").addEventListener("change", async (e) => {
-  try {
-    await invoke("set_login", { enabled: e.target.checked });
-  } catch {
-    e.target.checked = !e.target.checked;
-  }
+// The app answers with a "login" event carrying the actual state, also when the change failed
+$("g-login").addEventListener("change", (e) => {
+  invoke("set_login", { enabled: e.target.checked }).catch(() => {});
 });
 $("g-appearance").addEventListener("click", (e) => {
   const b = e.target.closest("button");
@@ -457,6 +454,11 @@ listen("config", (e) => {
   state.selected = Math.min(state.selected, Math.max(0, state.config.keyboards.length - 1));
   renderKeyboards();
   if (state.tab === "general") renderGeneral();
+});
+
+// Launch at login changed, here or in the tray menu
+listen("login", (e) => {
+  $("g-login").checked = e.payload;
 });
 
 listen("snapshot", (e) => {

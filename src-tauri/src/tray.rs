@@ -4,10 +4,9 @@
 use crate::hub::{Hub, Snapshot};
 use crate::{icon, popover, title};
 use std::sync::{Arc, Mutex};
-use tauri::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem};
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_autostart::ManagerExt;
 
 pub const TRAY_ID: &str = "keylay";
 
@@ -17,8 +16,7 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
     let reload = MenuItem::with_id(app, "reload", "Reload Config and Keymaps", true, None::<&str>)?;
     let settings = MenuItem::with_id(app, "settings", "Settings…", true, Some("CmdOrCtrl+,"))?;
     let config = MenuItem::with_id(app, "config", "Open Config File", true, None::<&str>)?;
-    let login_enabled = app.autolaunch().is_enabled().unwrap_or(false);
-    let login = CheckMenuItem::with_id(app, "login", "Launch at Login", true, login_enabled, None::<&str>)?;
+    let login = crate::login::menu_item(app)?;
     let quit = MenuItem::with_id(app, "quit", "Quit KeyLay", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
@@ -51,13 +49,9 @@ pub fn build(app: &AppHandle) -> tauri::Result<()> {
             "settings" => crate::settings::open(app),
             "config" => crate::open_in_editor(&app.state::<Arc<Hub>>().config_path),
             "login" => {
-                let autolaunch = app.autolaunch();
-                let enable = !autolaunch.is_enabled().unwrap_or(false);
-                let result = if enable { autolaunch.enable() } else { autolaunch.disable() };
-                if let Err(e) = result {
+                if let Err(e) = crate::login::set(app, !crate::login::enabled(app)) {
                     eprintln!("keylay: launch at login: {e}");
                 }
-                let _ = login.set_checked(autolaunch.is_enabled().unwrap_or(false));
             }
             "quit" => app.exit(0),
             _ => {}
