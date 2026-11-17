@@ -50,6 +50,19 @@ pub fn init(path: &Path) {
     state().memory = Memory::load(path);
 }
 
+/// What the window adds to the snapshot: whether it is pinned, and the height the user gave it.
+pub fn facts() -> crate::hub::WindowFacts {
+    let state = state();
+    crate::hub::WindowFacts {
+        pinned: state.memory.get().pinned || state.pinned_this_run,
+        max_height: state.memory.get().height,
+    }
+}
+
+fn tell_hub(app: &AppHandle) {
+    app.state::<Arc<Hub>>().set_window(facts());
+}
+
 pub fn pinned() -> bool {
     let state = state();
     state.memory.get().pinned || state.pinned_this_run
@@ -58,11 +71,6 @@ pub fn pinned() -> bool {
 /// Pins the popover until the app quits, without saving it.
 pub fn pin_for_this_run() {
     state().pinned_this_run = true;
-}
-
-/// The height the user gave the window; "All" grows up to it.
-pub fn max_height() -> Option<f64> {
-    state().memory.get().height
 }
 
 fn window(app: &AppHandle) -> Option<WebviewWindow> {
@@ -76,7 +84,7 @@ fn visible(window: &WebviewWindow) -> bool {
 /// A pinned popover stays open when another app has the focus.
 pub fn set_pinned(app: &AppHandle, pinned: bool) {
     state().memory.update(|s| s.pinned = pinned);
-    app.state::<Arc<Hub>>().notify();
+    tell_hub(app);
 }
 
 /// A click on the tray icon.
@@ -209,6 +217,8 @@ pub fn on_window_event(window: &Window, event: &WindowEvent) {
                     s.width = Some(size.width);
                     s.height = Some(size.height);
                 });
+                drop(state);
+                tell_hub(window.app_handle());
             }
         }
         WindowEvent::CloseRequested { api, .. } => {

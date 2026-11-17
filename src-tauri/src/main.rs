@@ -120,12 +120,16 @@ fn main() {
             popover::init(&app.path().app_config_dir()?.join("window.json"));
             let config_path = app.path().app_config_dir()?.join("config.json");
             let cache_dir = app.path().app_cache_dir()?.join("keymaps");
-            let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir));
+            if std::env::var_os("KEYLAY_SHOW_POPOVER").is_some() {
+                popover::pin_for_this_run();
+            }
+            let hub = Arc::new(Hub::new(handle.clone(), config_path, cache_dir, popover::facts()));
             app.manage(hub.clone());
 
             hub.apply_appearance();
             tray::build(&handle)?;
-            tray::refresh(&handle, &hub.snapshot());
+            hub.subscribe(Box::new(tray::TrayView::new(handle.clone())));
+            hub.subscribe(Box::new(hub::Windows(handle.clone())));
 
             hub.start_keymap_checks();
             hid::start(hub.clone());
@@ -141,7 +145,6 @@ fn main() {
                 });
             }
             if std::env::var_os("KEYLAY_SHOW_POPOVER").is_some() {
-                popover::pin_for_this_run();
                 std::thread::spawn(move || {
                     std::thread::sleep(Duration::from_millis(1500));
                     let app = handle.clone();

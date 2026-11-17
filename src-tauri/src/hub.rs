@@ -6,7 +6,6 @@ use crate::devices::{now_ms, DeviceView, Devices, Transport};
 use crate::keymap;
 use crate::intake::{Sink, Source};
 use crate::protocol::Report;
-use crate::tray;
 use serde::Serialize;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
@@ -67,6 +66,29 @@ pub struct ConfigChanged {
     pub origin: ConfigOrigin,
 }
 
+/// Something that shows the snapshot: the tray, the windows. Hub sends every new snapshot to
+/// each one, in the order they subscribed.
+pub trait Subscriber: Send + Sync {
+    fn show(&self, snapshot: &Snapshot);
+}
+
+/// The windows get the snapshot as a `snapshot` event.
+pub struct Windows(pub AppHandle);
+
+impl Subscriber for Windows {
+    fn show(&self, snapshot: &Snapshot) {
+        let _ = self.0.emit("snapshot", snapshot);
+    }
+}
+
+/// What the cheat sheet window adds to the snapshot (it remembers them, see popover).
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct WindowFacts {
+    pub pinned: bool,
+    /// The height the user gave the cheat sheet; "All" grows up to it
+    pub max_height: Option<f64>,
+}
+
 pub struct Hub {
     app: AppHandle,
     pub config_path: PathBuf,
@@ -74,10 +96,12 @@ pub struct Hub {
     config_error: RwLock<Option<String>>,
     keymaps: keymap::Store,
     devices: Devices,
+    window: RwLock<WindowFacts>,
+    subscribers: RwLock<Vec<Box<dyn Subscriber>>>,
 }
 
 impl Hub {
-    pub fn new(app: AppHandle, config_path: PathBuf, cache_dir: PathBuf) -> Hub {
+    pub fn new(app: AppHandle, config_path: PathBuf, cache_dir: PathBuf, window: WindowFacts) -> Hub {
         let (config, config_error) = Config::load_or_create(&config_path);
         Hub {
             app,
@@ -86,6 +110,8 @@ impl Hub {
             config_error: RwLock::new(config_error),
             keymaps: keymap::Store::new(cache_dir),
             devices: Devices::default(),
+            window: RwLock::new(window),
+            subscribers: RwLock::new(Vec::new()),
         }
     }
 
@@ -170,6 +196,7 @@ impl Hub {
     }
 
     pub fn snapshot(&self) -> Snapshot {
+        let window = *self.window.read().unwrap();
         let config = self.config.read().unwrap();
         let keymaps = self.keymaps.all();
         let keyboards = config
@@ -193,13 +220,13 @@ impl Hub {
         Snapshot {
             devices: self.devices.views(&config, &keymaps),
             keyboards,
-            pinned: crate::popover::pinned(),
+            pinned: window.pinned,
             config_path: self.config_path.display().to_string(),
             config_error: self.config_error.read().unwrap().clone(),
             title_format: config.title_format.clone(),
             layer_width: config.layer_width,
             appearance: crate::appearance::effective(&config.appearance),
-            popover_max_height: crate::popover::max_height(),
+            popover_max_height: window.max_height,
             layer_colors: crate::icon::LAYER_COLORS
                 .iter()
                 .map(|[r, g, b, _]| format!("#{r:02X}{g:02X}{b:02X}"))
@@ -207,14 +234,35 @@ impl Hub {
         }
     }
 
-    /// Tells the tray and the windows that something changed.
+    /// Adds something that shows the snapshot; it gets the current one right away, so it does
+    /// not matter what changed before it subscribed.
+    pub fn subscribe(&self, subscriber: Box<dyn Subscriber>) {
+        subscriber.show(&self.snapshot());
+        self.subscribers.write().unwrap().push(subscriber);
+    }
+
+    /// The cheat sheet window's pin or saved height changed.
+    pub fn set_window(&self, facts: WindowFacts) {
+        let changed = {
+            let mut window = self.window.write().unwrap();
+            let changed = *window != facts;
+            *window = facts;
+            changed
+        };
+        if changed {
+            self.notify();
+        }
+    }
+
+    /// Sends a new snapshot to every subscriber.
     pub fn notify(&self) {
         let snapshot = self.snapshot();
         if std::env::var_os("KEYLAY_DEBUG").is_some() {
             eprintln!("keylay: {}", serde_json::to_string(&snapshot.devices).unwrap_or_default());
         }
-        tray::refresh(&self.app, &snapshot);
-        let _ = self.app.emit("snapshot", &snapshot);
+        for subscriber in self.subscribers.read().unwrap().iter() {
+            subscriber.show(&snapshot);
+        }
     }
 }
 
