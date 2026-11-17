@@ -1,6 +1,6 @@
 # KeyLay
 
-- See the app (macOS): `scripts/dev-run.sh [popover|settings]` builds a debug bundle, opens that window and prints a screenshot path; `scripts/dev-run.sh stop` puts the installed app back afterwards. Start the app through it, not `target/debug/keylay`: macOS kills the bare binary (TCC) once it touches Bluetooth.
+- See the app (macOS): `scripts/dev-run.sh [popover|settings]` runs the current code as "KeyLay Dev" beside the installed app (own config, copied from it), opens that window and prints a screenshot path; `stop` quits it. Start the app through it, not `target/debug/keylay`: macOS kills the bare binary (TCC) once it touches Bluetooth.
 - Review rules: `CODING_STANDARDS.md`.
 - Check before committing: `npm run check` (tests, clippy, JS syntax, workflow lint); the pre-commit hook runs it.
 - See the UI in a browser without the app: `npm run ui:preview` (scripts/ui-preview stubs the Tauri runtime).

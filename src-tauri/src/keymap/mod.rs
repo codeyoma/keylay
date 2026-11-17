@@ -355,10 +355,12 @@ mod tests {
 
     #[test]
     fn checked_within_tracks_the_last_check() {
-        let store = Store::new(temp_dir("age"));
+        let dir = temp_dir("age");
+        let store = Store::new(dir.clone());
         assert!(!store.checked_within(Duration::from_secs(60)));
         store.refresh(&[]);
         assert!(store.checked_within(Duration::from_secs(60)));
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     /// Talks to GitHub: `cargo test -- --ignored`

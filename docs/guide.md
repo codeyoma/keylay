@@ -140,7 +140,8 @@ The file itself is `config.json` in the app's config folder (menu > Open Config 
 - `layerNames`: only needed when there is no SVG, or to rename layers.
 - `titleFormat` (macOS menu bar): `{keyboard}`, `{layer}`, `{battery}` (the lowest level,
   always 4 characters), separated by spaces. The settings window writes it from the Shown
-  row; other text in it is dropped the next time the parts are reordered there.
+  row; other text in it is dropped the next time the Shown row changes there (a drag or a
+  click).
 - `layerWidth`: characters for `{layer}`; longer names end in `…` (`Colemak` becomes
   `Colem…`). 0 shows names as they are.
 
