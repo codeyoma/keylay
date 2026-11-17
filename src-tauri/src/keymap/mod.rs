@@ -16,7 +16,8 @@ pub struct Keymap {
     /// The URL or path this was loaded from.
     pub source: String,
     pub svg: Option<String>,
-    /// Layer names in keymap order, so a layer index from the firmware maps to a name.
+    /// The keymap's own layer names, in keymap order (the config's renames are applied by
+    /// `KeyboardConfig::shown_layers`).
     pub layers: Vec<String>,
     pub error: Option<String>,
     /// GitHub's ETag of `svg`; sent back with If-None-Match to check for a newer file.
@@ -91,11 +92,7 @@ fn update(
         }
     }
 
-    keymap.layers = if !keyboard.layer_names.is_empty() {
-        keyboard.layer_names.clone()
-    } else {
-        keymap.svg.as_deref().map(layer_names).unwrap_or_default()
-    };
+    keymap.layers = keymap.svg.as_deref().map(layer_names).unwrap_or_default();
     let changed = previous.is_none_or(|p| {
         p.revision != keymap.revision || p.layers != keymap.layers || p.error != keymap.error
     });

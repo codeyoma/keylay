@@ -42,7 +42,10 @@ pub struct KeyboardView {
     /// The keymap URL or path, and when it was last checked (ms since the epoch)
     pub source: String,
     pub checked_at: Option<u64>,
+    /// The layer names shown: the keymap's, with the config's renames applied
     pub layers: Vec<String>,
+    /// The keymap's own layer names, so the settings window can tell renames apart
+    pub keymap_layers: Vec<String>,
     pub has_keymap: bool,
     pub keymap_error: Option<String>,
 }
@@ -179,7 +182,8 @@ impl Hub {
                     revision: keymap.map_or(0, |m| m.revision),
                     source: k.keymap.clone(),
                     checked_at: keymap.and_then(|m| m.checked_at),
-                    layers: keymap.map(|m| m.layers.clone()).unwrap_or_default(),
+                    layers: k.shown_layers(keymap.map_or(&[][..], |m| m.layers.as_slice())),
+                    keymap_layers: keymap.map(|m| m.layers.clone()).unwrap_or_default(),
                     has_keymap: keymap.is_some_and(|m| m.svg.is_some()),
                     keymap_error: keymap.and_then(|m| m.error.clone()),
                 }

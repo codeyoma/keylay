@@ -115,12 +115,12 @@ function setPressed(group, value) {
 }
 
 // The layer names a keymap source has, from the app's last check or a probe of our own
+// The keymap's own layer names: from the app once it has loaded this source, from our probe
+// while a just-typed source has not been saved yet. Found by source, not by name, so it holds
+// while the name is being edited.
 function keymapLayers(k) {
-  const loaded = state.snapshot?.keyboards.find((x) => x.name === k.name);
-  const probe = state.probe[k.keymap];
-  if (probe?.layers) return probe.layers;
-  if (loaded?.layers?.length && !k.layerNames?.length) return loaded.layers;
-  return probe?.layers ?? [];
+  const loaded = state.snapshot?.keyboards.find((x) => x.source === k.keymap.trim());
+  return loaded?.keymapLayers ?? state.probe[k.keymap]?.layers ?? [];
 }
 
 function renderKeymapStatus(k) {
@@ -158,11 +158,13 @@ async function probe(source) {
 
 function renderLayers(k) {
   const fromSvg = keymapLayers(k);
-  const names = k.layerNames?.length ? k.layerNames : fromSvg;
+  // The user's renames over the keymap's names (the same rule as shown_layers in config.rs)
+  const count = Math.max(fromSvg.length, k.layerNames?.length ?? 0);
+  const names = Array.from({ length: count }, (_, i) => k.layerNames?.[i]?.trim() || fromSvg[i] || `Layer ${i}`);
   const box = $("f-layers");
   const chips = names.map((n, i) => {
     const chip = document.createElement("button");
-    chip.className = "chip" + (k.layerNames?.length && n !== fromSvg[i] ? " renamed" : "");
+    chip.className = "chip" + (n !== fromSvg[i] ? " renamed" : "");
     chip.innerHTML = `<span class="swatch"></span><span class="n"></span>`;
     chip.querySelector(".swatch").style.background = layerColor(state.snapshot, i);
     chip.querySelector(".n").textContent = n;
@@ -170,7 +172,7 @@ function renderLayers(k) {
     chip.addEventListener("click", () => renameLayer(chip, k, names, i));
     return chip;
   });
-  if (k.layerNames?.length) {
+  if (k.layerNames?.some((n) => n.trim())) {
     const reset = document.createElement("button");
     reset.className = "reset";
     reset.textContent = "Use the keymap's names";
@@ -208,9 +210,15 @@ function renameLayer(chip, k, names, i) {
   input.focus();
   input.select();
   const done = (commit) => {
-    if (commit && input.value.trim() && input.value.trim() !== names[i]) {
-      k.layerNames = [...names];
-      k.layerNames[i] = input.value.trim();
+    const name = input.value.trim();
+    if (commit && name && name !== names[i]) {
+      // Only renames are stored; an empty entry, or the keymap's own name, means "as in the
+      // keymap"
+      const fromSvg = keymapLayers(k);
+      const renames = Array.from({ length: Math.max(names.length, i + 1) }, (_, j) => k.layerNames?.[j] ?? "");
+      renames[i] = name === fromSvg[i] ? "" : name;
+      while (renames.length && !renames.at(-1)) renames.pop();
+      k.layerNames = renames;
       save();
     }
     renderDetail();

@@ -54,6 +54,20 @@ impl Default for Config {
     }
 }
 
+impl KeyboardConfig {
+    /// The layer names to show: the user's rename for a layer where there is one, the
+    /// keymap's own name otherwise. Renames past the keymap's last layer still show, for a
+    /// keyboard without a keymap.
+    pub fn shown_layers(&self, keymap_layers: &[String]) -> Vec<String> {
+        (0..keymap_layers.len().max(self.layer_names.len()))
+            .map(|i| match self.layer_names.get(i) {
+                Some(name) if !name.trim().is_empty() => name.clone(),
+                _ => keymap_layers.get(i).cloned().unwrap_or_else(|| format!("Layer {i}")),
+            })
+            .collect()
+    }
+}
+
 impl Config {
     /// Reads the config file, writing the default one first if there is none. A file that
     /// does not parse gives the default config and the error.
@@ -130,5 +144,20 @@ mod tests {
         assert_eq!(name("Charybdis Nano (QMK)", Transport::Usb), Some("Charybdis QMK"));
         assert_eq!(name("Charybdis Nano", Transport::Ble), Some("Charybdis ZMK"));
         assert_eq!(name("MX Master 3", Transport::Ble), None);
+    }
+
+    fn renamed(names: &[&str]) -> KeyboardConfig {
+        KeyboardConfig { layer_names: names.iter().map(|n| n.to_string()).collect(), ..Default::default() }
+    }
+
+    #[test]
+    fn shown_layers_apply_the_renames_over_the_keymap() {
+        let keymap: Vec<String> = ["Base", "Lower", "Raise"].iter().map(|n| n.to_string()).collect();
+        assert_eq!(renamed(&[]).shown_layers(&keymap), ["Base", "Lower", "Raise"]);
+        assert_eq!(renamed(&["Home", "", "Up"]).shown_layers(&keymap), ["Home", "Lower", "Up"]);
+        // Shorter renames keep the keymap's names; longer ones add layers
+        assert_eq!(renamed(&["Home"]).shown_layers(&keymap), ["Home", "Lower", "Raise"]);
+        assert_eq!(renamed(&["A", "B", "C", "D"]).shown_layers(&keymap), ["A", "B", "C", "D"]);
+        assert_eq!(renamed(&["", "Num"]).shown_layers(&[]), ["Layer 0", "Num"]);
     }
 }

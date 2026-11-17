@@ -126,8 +126,10 @@ impl Devices {
             .into_iter()
             .map(|(id, d)| {
                 let keyboard = config.keyboard_for(&d.name, d.transport);
-                let layers = keyboard.and_then(|k| keymaps.get(&k.name)).map(|k| k.layers.as_slice());
-                device_view(id, d, keyboard, layers)
+                let layers = keyboard.map(|k| {
+                    k.shown_layers(keymaps.get(&k.name).map_or(&[][..], |m| m.layers.as_slice()))
+                });
+                device_view(id, d, keyboard, layers.as_deref())
             })
             .collect()
     }

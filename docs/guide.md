@@ -139,7 +139,8 @@ solid) and an open settings window all switch to the file's version.
 - `batteryLabels`: names of the batteries in the order the firmware sends them: the
   keyboard or central first, then the peripherals in pairing order. Swap them if the halves
   come out reversed.
-- `layerNames`: only needed when there is no SVG, or to rename layers.
+- `layerNames`: renames, by layer position; an empty entry keeps the keymap's name
+  (`["", "", "Down"]` renames only layer 2). Also names the layers when there is no SVG.
 - `titleFormat` (macOS menu bar): `{keyboard}`, `{layer}`, `{battery}` (the lowest level,
   always 4 characters), separated by spaces. The settings window writes it from the Shown
   row; other text in it is dropped the next time the Shown row changes there (a drag or a
