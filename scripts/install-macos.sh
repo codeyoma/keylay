@@ -38,6 +38,12 @@ elif ! xcrun notarytool history --keychain-profile "$profile" >/dev/null 2>&1; t
 fi
 echo "Signing with: $APPLE_SIGNING_IDENTITY"
 
+# cargo lives in the rustup toolchain, which is not always on PATH
+if ! command -v cargo >/dev/null; then
+  PATH="$(dirname "$(rustup which cargo)"):$PATH"
+  export PATH
+fi
+
 # Tauri signs the app; the disk image wraps it
 npx --yes @tauri-apps/cli@2 build --bundles app,dmg
 app=target/release/bundle/macos/KeyLay.app
